@@ -105,7 +105,7 @@ export default class clan implements IBotCommand {
         slstID.sort(compareSecondColumn);
         plstID.sort(compareSecondColumn);
         var megaList = [commandid,db.get(`${commandid}.glory`)] + fmlst + glst + mlst + llst + slst + plst;
-        var megaListUN = [commandun,db.get(`${commandid}.glory}`)] + fmlstID + glstID + mlstID + llstID + slstID + plstID;
+        var megaListUN: any = [commandun,db.get(`${commandid}.glory`)].concat(fmlst,glst,mlst,llst,slst,plst);
         var secc = megaList[1][0];
     }
 
@@ -208,11 +208,11 @@ export default class clan implements IBotCommand {
                 msg.reply('You are not in a clan!');
                 return;
             }
-            //showw! 
+            //showw! FIX THE MEGALIST WEIRD BUG THING
             for (var x = 0; x < megaListUN.length; x++){
                 console.log(megaListUN);
-                console.log(megaListUN.length);
-                msg.channel.send(megaListUN[x][0]);
+                console.log(typeof megaListUN);
+                msg.channel.send(megaListUN[x]);
             }
             
             
