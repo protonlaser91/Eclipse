@@ -54,7 +54,7 @@ function join(member: Discord.GuildMember){
 Bot.on("message", msg => {
     if (msg.author.bot || !msg.content.startsWith('!')) return;
     if (msg.channel.type == 'dm'){
-        msg.author.send(`Turning ${msg.author} into Smarmyman#0001. Eliminating you.`);
+        msg.author.send(`Please talk to me on a server! This ensures more engagement and reliability.`);
         return;
     }
     handleCommand(msg);
