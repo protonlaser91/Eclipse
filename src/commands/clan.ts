@@ -55,7 +55,7 @@ export default class clan implements IBotCommand {
             var mid = Clan.get(`${cName}.memberids`);
             var mun = Clan.get(`${cName}.memberuns`);
             //UserID, Username, Glory Amount!
-            switch (db.get(`${mid}.position`)){
+            switch (db.get(`${mid[x}.position`)){
                 case 'Commander':
                     console.log('got ocmmander!')
                     console.log(mun[x])
