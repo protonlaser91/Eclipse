@@ -24,12 +24,12 @@ export default class clan implements IBotCommand {
     }
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
-        function compareSecondColumn(a: (string | number)[], b: (string | number)[]) {
-            if (a[1] === b[1]) {
+        function cTC(a: (string | number)[], b: (string | number)[]) { //compareThirdColumn
+            if (a[2] === b[2]) {
                 return 0;
             }
             else {
-                return (a[1] < b[1]) ? 1 : -1;
+                return (a[2] < b[2]) ? 1 : -1;
             }
         }
         //hierarchy! Commander --> Field Marshal --> General --> Major --> Lieutenant --> Sergeant --> Private
@@ -43,78 +43,68 @@ export default class clan implements IBotCommand {
                 }
         
         if (db.get(`${msg.author.id}.clanname`) != 'None'){
+        msg.channel.send(`${db.get(`${msg.author.id}.clanname`)}`);
+        var noSec = false;
         let fmlst: any = []
         let glst: any = []
         let mlst: any = []
         let llst: any = []
         let slst: any = []
         let plst: any = []
-        let fmlstID: any = []
-        let glstID: any = []
-        let mlstID: any = []
-        let llstID: any = []
-        let slstID: any = []
-        let plstID: any = []
         var cName = db.get(`${msg.author.id}.clanname`)
         for (var x  = 0; x < Clan.get(`${cName}.memberids`).length; x++){
             var mid = Clan.get(`${cName}.memberids`);
             var mun = Clan.get(`${cName}.memberuns`);
-            switch (db.get(`${mid}.position`)){
+            //UserID, Username, Glory Amount!
+            switch (db.get(`${mid[x]}.position`)){
                 case 'Commander':
                     console.log('got ocmmander!')
                     console.log(mun[x])
                     var commandid = mid[x];
-                    var commandun = mun[x];
+                    var commandun: any = `***Cdr.***  ${mun[x]}`;
                     break;
                 case 'Field Marshal':
-                    fmlst.push([mun[x],db.get(`${mid[x]}.glory`)]);
-                    fmlstID.push([mid[x],db.get(`${mid[x]}.glory`)]);
+                    fmlst.push([mid[x],`**F. Marshal**  ${mun[x]}`,db.get(`${mid[x]}.glory`)]);
                     break;
                 case 'General':
-                    glst.push([mun[x],db.get(`${mid[x]}.glory`)]);
-                    glstID.push([mid[x],db.get(`${mid[x]}.glory`)]);
+                    glst.push([mid[x],`*Gen.*  ${mun[x]}`,db.get(`${mid[x]}.glory`)]);
                     break;
                 case 'Major':
-                    mlst.push([mun[x],db.get(`${mid[x]}.glory`)]);
-                    mlstID.push([mid[x],db.get(`${mid[x]}.glory`)]);
+                    mlst.push([mid[x],`*Maj.*  ${mun[x]}`,db.get(`${mid[x]}.glory`)]);
                     break;
                 case 'Lieutenant':
-                    llst.push([mun[x],db.get(`${mid[x]}.glory`)]);
-                    llstID.push([mid[x],db.get(`${mid[x]}.glory`)]);
+                    llst.push([mid[x],`Lt.  ${mun[x]}`,db.get(`${mid[x]}.glory`)]);
                     break;
                 case 'Sergeant':
-                    slst.push([mun[x],db.get(`${mid[x]}.glory`)]);
-                    slstID.push([mid[x],db.get(`${mid[x]}.glory`)]);
+                    slst.push([mid[x],`Sgt.  ${mun[x]}`,db.get(`${mid[x]}.glory`)]);
                     break;
                 case 'Private':
-                    plst.push([mun[x],db.get(`${mid[x]}.glory`)]);
-                    plstID.push([mid[x],db.get(`${mid[x]}.glory`)]);
+                    plst.push([mid[x],`Pvt. ${mun[x]}`,db.get(`${mid[x]}.glory`)]);
                     break;
             }
         }
-        fmlst.sort(compareSecondColumn);
-        glst.sort(compareSecondColumn);
-        mlst.sort(compareSecondColumn);
-        llst.sort(compareSecondColumn);
-        slst.sort(compareSecondColumn);
-        plst.sort(compareSecondColumn);
-        fmlstID.sort(compareSecondColumn);
-        glstID.sort(compareSecondColumn);
-        mlstID.sort(compareSecondColumn);
-        llstID.sort(compareSecondColumn);
-        slstID.sort(compareSecondColumn);
-        plstID.sort(compareSecondColumn);
-        var megaList = [commandid,db.get(`${commandid}.glory`)] + fmlst + glst + mlst + llst + slst + plst;
-        var megaListUN = [commandun,db.get(`${commandid}.glory}`)] + fmlstID + glstID + mlstID + llstID + slstID + plstID;
-        var secc = megaList[1][0];
+        fmlst.sort(cTC);
+        glst.sort(cTC);
+        mlst.sort(cTC);
+        llst.sort(cTC);
+        slst.sort(cTC);
+        plst.sort(cTC);
+
+        var megaList: any = [[commandid,commandun,db.get(`${commandid}.glory`)]].concat(fmlst,glst,mlst,llst,slst,plst);
+        try {
+            var secc = megaList[1][0];
+        } catch {
+            //User is only member in clan!
+            var noSec = true;
+        }
     }
 
     if (args[0] === undefined){
-        msg.reply('no!');
-        return;
+        msg.reply('Hiding a needle in a haystack, that\'s good. Hiding a needle in a stack of needles? That\'s even better!');
+        args = ['s'];
     }
         //var clanlist: String[] = [];
-        if (args[0].toLowerCase().includes('j')){
+        if (args[0].toLowerCase().startsWith('j')){
             if (args.length < 2){
                 msg.reply('Proper usage: `!clan <make/join/leave/show> <clanname>`')
                 msg.channel.send(`Available Clans: ${clanlist}`) //turn into embed LATER
@@ -123,34 +113,39 @@ export default class clan implements IBotCommand {
             if (db.get(`${msg.author.id}.clanname`) == 'None'){
                 let cl = []
                 for (var x = 0; x < args.slice(1).length; x++){
-                    if (isNaN(Number(args.slice(1)[x]))){
+                    try {
                         cl.push(args.slice(1)[x].toLowerCase())
                     }
-                    else {
+                    catch {
                         cl.push(`${args.slice(1)[x]}`)
                     }
                 }
                 let cl2 = cl.join(' ');
-                let cNamer = db.get(`${allUsers[x].id}.clanname`)
                 for (var x = 0; x < clanlist.length; x++){
-                    console.log(clanlist[x])
-                    if (clanlist[x].includes(cl2)){
+                    console.log(clanlist[x]);
+                    if (clanlist[x].toLowerCase().includes(cl2)){
+                        if (Clan.get(`${clanlist[x]}.memberids`).length >= 12){
+                            msg.reply('This clan is full!');
+                            return;
+                        }
                         db.set(`${msg.author.id}.clanname`,clanlist[x]);
                         db.set(`${msg.author.id}.position`,`Private`);
-                        Clan.push(`${cNamer}.members`,msg.author)
-                        console.log(Clan.all())
+                        Clan.push(`${clanlist[x]}.memberids`,msg.author.id)
+                        Clan.push(`${clanlist[x]}.memberuns`,msg.author.username)
+                        console.log(cl2)
                        msg.reply(`Successfully added you to clan \`${clanlist[x]}\``)
                        return;
                    }
                }
                msg.reply('Unable to find that clan! If this is an error, please message p1ng!');
+               msg.reply(`Expected reply: ${clanlist}\n Reply received: ${cl2}`);
             } else {
                 msg.reply('You are already in a clan!')
             }
 
         }
 
-        else if (args[0].toLowerCase().includes('m')){
+        else if (args[0].toLowerCase().startsWith('m')){
             let rAmt = db.get(`${msg.author.id}.money`)
             if (rAmt < 5000){
                 msg.reply('You do not have enough rubies to create a clan! You need at least 5000 rubies or message the author of this bot for permission to add a clan.');
@@ -162,7 +157,7 @@ export default class clan implements IBotCommand {
             }
             let cname2 = args.slice(1).join(' ')
             if (Clan.all().includes(cname2)){
-                msg.reply('clan already exists!')
+                msg.reply('clan already exists or is too similar to other clan names!')
                 return;
             }
             msg.reply(`clan name: ${cname2}`)
@@ -177,7 +172,7 @@ export default class clan implements IBotCommand {
             db.set(`${msg.author.id}.clanname`,cname2)
             db.set(`${msg.author.id}.position`,'Commander')
             msg.reply(`Successfully created clan \`${args.slice(1).join(' ')}\` and made you a Commander!`)
-        } else if (args[0].toLowerCase().includes('l')){
+        } else if (args[0].toLowerCase().startsWith('l')){
             if (db.get(`${msg.author.id}.clanname`) === 'None'){
                 msg.reply('You are not in a clan to leave!');
                 return;
@@ -203,28 +198,170 @@ export default class clan implements IBotCommand {
             
             db.set(`${msg.author.id}.clanname`,'');
             db.set(`${msg.author.id}.position`,'');
-        } else if (args[0].toLowerCase().includes('s')){
+        } else if (args[0].toLowerCase().startsWith('s')){
             if (db.get(`${msg.author.id}.clanname`) === 'None'){
                 msg.reply('You are not in a clan!');
                 return;
             }
-            //showw! 
-            for (var x = 0; x < megaListUN.length; x++){
-                console.log(megaListUN);
-                console.log(megaListUN.length);
-                msg.channel.send(megaListUN[x][0]);
+            //showw!  //UserID, Username, Glory Amount! For loop is for testing! 12 ppl per clan, list 8 on showEmbed
+            var clanID = megaList.indexOf([msg.author.id,msg.author.username,db.get(`${msg.author.id}.glory`)]);
+            //msg.channel.send(megaList)
+            if (megaList.length >= 8){ //ideal condition
+                if (clanID < 4){
+                    var pC = megaList.slice(0,8);
+                }
+                else if (clanID >= 4 && clanID <= megaList.length-4){ 
+                    var pC = megaList.slice(clanID-4,clanID+4);
+                }
+                else {
+                    var pC = megaList.slice(megaList.length - 8);
+                }
+                const baseID = megaList.indexOf(pC[0]);
+                const sEmbedFull = new Discord.RichEmbed()
+                            .setColor(Math.floor(Math.random() * 16777214) + 1)
+                            .setAuthor(`${db.get(`${msg.author.id}.clanname`)} Clan Leaderboard!`)
+                            .setThumbnail(msg.author.avatarURL)
+                            .setDescription('See where you rank!')
+                            .addField(`#${baseID}: ${pC[0][1]}`,`${pC[0][2]} glory points!`,false)
+                            .addField(`#${baseID+1}: ${pC[1][1]}`,`${pC[1][2]} glory points!`,false)
+                            .addField(`#${baseID+2}: ${pC[2][1]}`,`${pC[2][2]} glory points!`,false)
+                            .addField(`#${baseID+3}: ${pC[3][1]}`,`${pC[3][2]} glory points!`,false)
+                            .addField(`#${baseID+4}: ${pC[4][1]}`,`${pC[4][2]} glory points!`,false)
+                            .addField(`#${baseID+5}: ${pC[5][1]}`,`${pC[5][2]} glory points!`,false)
+                            .addField(`#${baseID+6}: ${pC[6][1]}`,`${pC[6][2]} glory points!`,false)
+                            .addField(`#${baseID+7}: ${pC[7][1]}`,`${pC[7][2]} glory points!`,false)
+                            .setFooter('Leaderboards',msg.author.avatarURL)
+                            .setAuthor('BattleBot',Bot.user.avatarURL);
+                        msg.channel.send(sEmbedFull);
+                
+            } else {
+                var pC = megaList;
+                switch (pC.length){
+                    case 7:
+                        const sEmbed7 = new Discord.RichEmbed()
+                        .setColor(Math.floor(Math.random() * 16777214) + 1)
+                        .setAuthor(`${db.get(`${msg.author.id}.clanname`)} Clan Leaderboard!`)
+                        .setThumbnail(msg.author.avatarURL)
+                        .setDescription('See the top 7 people in your clan!')
+                        .addField(`**#1:** ${pC[0][1]}`,`**${pC[0][2]}** glory points!`,false)
+                        .addField(`#2: ${pC[1][1]}`,`${pC[1][2]} glory points!`,false)
+                        .addField(`#3: ${pC[2][1]}`,`${pC[2][2]} glory points!`,false)
+                        .addField(`#4: ${pC[3][1]}`,`${pC[3][2]} glory points!`,false)
+                        .addField(`#5: ${pC[4][1]}`,`${pC[4][2]} glory points!`,false)
+                        .addField(`#6: ${pC[5][1]}`,`${pC[5][2]} glory points!`,false)
+                        .addField(`#7: ${pC[6][1]}`,`${pC[6][2]} glory points!`,false)
+                        .setFooter('Leaderboards',msg.author.avatarURL)
+                        .setAuthor('BattleBot',Bot.user.avatarURL);
+                        msg.channel.send(sEmbed7);
+                        break;
+                    case 6:
+                            const sEmbed6 = new Discord.RichEmbed()
+                            .setColor(Math.floor(Math.random() * 16777214) + 1)
+                            .setAuthor(`${db.get(`${msg.author.id}.clanname`)} Clan Leaderboard!`)
+                            .setThumbnail(msg.author.avatarURL)
+                            .setDescription('See the top 6 people in your clan!')
+                            .addField(`**#1:** ${pC[0][1]}`,`**${pC[0][2]}** glory points!`,false)
+                            .addField(`#2: ${pC[1][1]}`,`${pC[1][2]} glory points!`,false)
+                            .addField(`#3: ${pC[2][1]}`,`${pC[2][2]} glory points!`,false)
+                            .addField(`#4: ${pC[3][1]}`,`${pC[3][2]} glory points!`,false)
+                            .addField(`#5: ${pC[4][1]}`,`${pC[4][2]} glory points!`,false)
+                            .addField(`#6: ${pC[5][1]}`,`${pC[5][2]} glory points!`,false)
+                            .setFooter('Leaderboards',msg.author.avatarURL)
+                            .setAuthor('BattleBot',Bot.user.avatarURL);
+                            msg.channel.send(sEmbed6);
+                            break;
+                    case 5:
+                            const sEmbed5 = new Discord.RichEmbed()
+                            .setColor(Math.floor(Math.random() * 16777214) + 1)
+                            .setAuthor(`${db.get(`${msg.author.id}.clanname`)} Clan Leaderboard!`)
+                            .setThumbnail(msg.author.avatarURL)
+                            .setDescription('See the top 5 people in your clan!')
+                            .addField(`**#1**: ${pC[0][1]}`,`**${pC[0][2]}** glory points!`,false)
+                            .addField(`#2: ${pC[1][1]}`,`${pC[1][2]} glory points!`,false)
+                            .addField(`#3: ${pC[2][1]}`,`${pC[2][2]} glory points!`,false)
+                            .addField(`#4: ${pC[3][1]}`,`${pC[3][2]} glory points!`,false)
+                            .addField(`#5: ${pC[4][1]}`,`${pC[4][2]} glory points!`,false)
+                            .setFooter('Leaderboards',msg.author.avatarURL)
+                            .setAuthor('BattleBot',Bot.user.avatarURL);
+                            msg.channel.send(sEmbed5);
+                            break;
+                    case 4:
+                            const sEmbed4 = new Discord.RichEmbed()
+                            .setColor(Math.floor(Math.random() * 16777214) + 1)
+                            .setAuthor(`${db.get(`${msg.author.id}.clanname`)} Clan Leaderboard!`)
+                            .setThumbnail(msg.author.avatarURL)
+                            .setDescription('See the top 4 people in your clan!')
+                            .addField(`**#1:** ${pC[0][1]}`,`**${pC[0][2]}** glory points!`,false)
+                            .addField(`#2: ${pC[1][1]}`,`${pC[1][2]} glory points!`,false)
+                            .addField(`#3: ${pC[2][1]}`,`${pC[2][2]} glory points!`,false)
+                            .addField(`#4: ${pC[3][1]}`,`${pC[3][2]} glory points!`,false)
+                            .setFooter('Leaderboards',msg.author.avatarURL)
+                            .setAuthor('BattleBot',Bot.user.avatarURL);
+                            msg.channel.send(sEmbed4);
+                            break;
+                    case 3:
+                            const sEmbed3 = new Discord.RichEmbed()
+                            .setColor(Math.floor(Math.random() * 16777214) + 1)
+                            .setAuthor(`${db.get(`${msg.author.id}.clanname`)} Clan Leaderboard!`)
+                            .setThumbnail(msg.author.avatarURL)
+                            .setDescription('See the top 3 people in your clan!')
+                            .addField(`**#1:** ${pC[0][1]}`,`**${pC[0][2]}** glory points!`,false)
+                            .addField(`#2: ${pC[1][1]}`,`${pC[1][2]} glory points!`,false)
+                            .addField(`#3: ${pC[2][1]}`,`${pC[2][2]} glory points!`,false)
+                            .setFooter('Leaderboards',msg.author.avatarURL)
+                            .setAuthor('BattleBot',Bot.user.avatarURL);
+                            msg.channel.send(sEmbed3);
+                            break;
+                    case 2:
+                            const sEmbed2 = new Discord.RichEmbed()
+                            .setColor(Math.floor(Math.random() * 16777214) + 1)
+                            .setAuthor(`${db.get(`${msg.author.id}.clanname`)} Clan Leaderboard!`)
+                            .setThumbnail(msg.author.avatarURL)
+                            .setDescription('See the top 2 people in your clan!')
+                            .addField(`**#1:** ${pC[0][1]}`,`**${pC[0][2]}** glory points!`,false)
+                            .addField(`#2: ${pC[1][1]}`,`${pC[1][2]} glory points!`,false)
+                            .setFooter('Leaderboards',msg.author.avatarURL)
+                            .setAuthor('BattleBot',Bot.user.avatarURL);
+                            msg.channel.send(sEmbed2);
+                            break;
+                    case 1:
+                            const sEmbed1 = new Discord.RichEmbed()
+                            .setColor(Math.floor(Math.random() * 16777214) + 1)
+                            .setAuthor(`${db.get(`${msg.author.id}.clanname`)} Clan Leaderboard!`)
+                            .setThumbnail(msg.author.avatarURL)
+                            .setDescription('See the top person in your clan! (Hail Ashwin IV)')
+                            .addField(`**#1:** ${pC[0][1]}`,`**${pC[0][2]}** glory points!`,false)
+                            .setFooter('Leaderboards',msg.author.avatarURL)
+                            .setAuthor('BattleBot',Bot.user.avatarURL);
+                            msg.channel.send(sEmbed1);
+                            break;
+                }
+                
             }
+            //remember to bold user in showList/pC!,and BOLD titles like F.Marshal Bendy or Maj. Shquitler I or Com. Bandy
             
             
             msg.reply(`You are in the clan \`${db.get(`${msg.author.id}.clanname`)}\` and you are a \`${db.get(`${msg.author.id}.position`)}\`!`);
             return;
-        } else if (args[0].toLowerCase().includes('p')){
+        } else if (args[0].toLowerCase().startsWith('p')){
             msg.reply('notaddedyet!');
             return;
+        } else if (args[0].toLowerCase().startsWith('i')){
+            if (args.length < 2){
+                msg.reply('Proper usage: `!clan i <user> OPTIONAL: <position>`')
+                return;
+            }
+            if (db.get(`${msg.author.id}.clanname`) == 'None'){
+                msg.reply('You are not a clan, so you cannot invite someone!');
+                return;
+            } 
+            let mentionedUser = msg.mentions.users.first();
+            msg.channel.send(`Sent invitation to ${mentionedUser}!`)
+            mentionedUser.send(`Hello! The user ${msg.author.username} has invited you to join their clan, \`${db.get(`${msg.author.id}.clanname`)}\`! If you would like to join, simply go on the server and type \`!clan j ${db.get(`${msg.author.id}.clanname`)}\``);
         }
          else {
             msg.reply('Proper usage: `!clan <make/join/leave> <clanname>`')
-            msg.reply(Clan.all())
+            //msg.reply(Clan.all())
             return;
         }
     }
