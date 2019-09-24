@@ -1,5 +1,5 @@
 export let config = {
-    "token": "INSERT_TOKEN_HERE!",
+    "token": "MzMzNjg5MTY2NTQ0MTA5NTc5.XXVzoQ.-gM9fXKqfdhZwc8eaRsMdpzhefk",
     "prefix": "!",
     "commands": [
         "ascend",
