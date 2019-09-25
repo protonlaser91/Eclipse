@@ -11,6 +11,8 @@
   "dependencies": {
     "@types/node": "^12.0.10",
     "discord.js": "^11.5.1",
-    "quick.db": "^7.0.0-b22"
+    "node-fetch": "^2.6.0",
+    "quick.db": "^7.0.0-b22",
+    "snekfetch": "^4.0.4"
   }
 }
