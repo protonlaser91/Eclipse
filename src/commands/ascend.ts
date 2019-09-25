@@ -2,7 +2,7 @@ import * as Discord from "discord.js";
 import { IBotCommand } from "../api";
 
 export default class serverCommand implements IBotCommand {
-
+//honk honk am goose
     private readonly _command = "ascend"
 
     name(): string {
