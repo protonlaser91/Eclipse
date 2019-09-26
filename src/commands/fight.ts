@@ -25,6 +25,7 @@ export default class fight implements IBotCommand {
     }
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
+        msg.channel.send('FIGHT FUNCTION BEING REMODELED!'); //remodel
         msg.delete(0);
         let mentionedUser = msg.mentions.users.first();
         if (mentionedUser === msg.author){
@@ -66,13 +67,13 @@ export default class fight implements IBotCommand {
             }
         
         }
-        var tCho = 0;
-        var sCho = 0;
+        var attackDeployT = 0;
+        var attackDeployS = 0;
         if (args[2].toLowerCase().includes('thanos')){
-            tCho += parseInt(args[1])
+            attackDeployT += parseInt(args[1])
 
         } else if (args[2].toLowerCase().includes('sai')){
-            sCho += parseInt(args[1])
+            attackDeployS += parseInt(args[1])
 
         } else {
             msg.reply(`I could not find troop ${args[2]}`);
@@ -81,27 +82,27 @@ export default class fight implements IBotCommand {
         
         if (args[4] !== undefined){
             if (args[4].toLowerCase().includes('thanos')){
-                tCho += parseInt(args[3])
+                attackDeployT += parseInt(args[3])
             } else if (args[4].toLowerCase().includes('sai')){
-                sCho += parseInt(args[3])
+                attackDeployS += parseInt(args[3])
             } else {
                 msg.reply(`I could not find troop ${args[4]}`);
                 return;
             }
         } 
 
-        if (tCho < 0 || sCho < 0 ){
+        if (attackDeployT < 0 || attackDeployS < 0 ){
             msg.reply('Nice try!')
             return;
         }
         
-        const tn1 = db.get(`${msg.author.id}.tAmt`)
-        const sn1 = db.get(`${msg.author.id}.sAmt`) 
+        const attackTotalT = db.get(`${msg.author.id}.tAmt`)
+        const attackTotalS = db.get(`${msg.author.id}.sAmt`) 
 
-        if (tCho > tn1){
+        if (attackDeployT > attackTotalT){
             msg.reply("You don't have enough Thanosid to launch this attack!");
             return;
-        } else if (sCho > sn1){
+        } else if (attackDeployS > attackTotalS){
             msg.reply("You don't have enough saimonGays to launch this attack!");
             return;
         }
@@ -134,16 +135,16 @@ export default class fight implements IBotCommand {
          timestamps.set(msg.author.id, now);
          setTimeout(() => timestamps.delete(msg.author.id), cooldownAmount);
 
-        db.add(`${msg.author.id}.tAmt`,-tCho);
-        db.add(`${msg.author.id}.sAmt`,-sCho);
+        db.add(`${msg.author.id}.tAmt`,-attackDeployT); //subtract attackDeployers
+        db.add(`${msg.author.id}.sAmt`,-attackDeployS);
 
        /*  var bal1 = db.get(`${msg.author.id}.money`)
         var bal2 = db.get(`${mentionedUser.id}.money`)
         */
-        var tn2 = db.get(`${mentionedUser.id}.tAmt`)
-        var sn2 = db.get(`${mentionedUser.id}.sAmt`)
-        msg.channel.send(`Attacker's Items[0]: ${tCho} Thanosid and ${sCho} saimonGays\nDefender's Items: ${tn2} Thanosid and ${sn2} saimonGays`);
-
+        var defenderT = db.get(`${mentionedUser.id}.tAmt`)
+        var defenderS = db.get(`${mentionedUser.id}.sAmt`)
+        msg.channel.send(`Attacker's Items[0]: ${attackDeployT} Thanosid and ${attackDeployS} saimonGays\nDefender's Items: ${defenderT} Thanosid and ${defenderS} saimonGays`);
+         //remodel BELOW
         function elevate(aTroopn: number,dTroopn: number,l: string){
            let aGlory = db.get(`${msg.author.id}.glory`)
            let dGlory = db.get(`${mentionedUser.id}.glory`)
@@ -206,12 +207,13 @@ export default class fight implements IBotCommand {
         return [(db.get(`${msg.author.id}.glory`) - g1),(db.get(`${mentionedUser.id}.glory`) - g2)]
         }
         console.log("seriously??");
+
         function fight(t1: number,s1: number,t2: number,s2: number){
            let battleStat = "";
            let tn = Math.abs(t1-t2);
            let sn = Math.abs(s1-s2);
-           t1 = elevate(tCho,tn2,'t');
-           s1 = elevate(sCho,sn2,'s');
+           //t1 = elevate(tCho,tn2,'t');
+          // s1 = elevate(sCho,sn2,'s');
 //jjj       
            let tU2 = db.get(`${mentionedUser.id}.tAmt`);
            let sU2 = db.get(`${mentionedUser.id}.sAmt`);
@@ -280,7 +282,7 @@ export default class fight implements IBotCommand {
                var resultA = 'Defeat! The defense was too stubborn...';
                var resultD = 'Victory! Your forces held off the attacking army successfully!';
            }
-        [gloryA, gloryD] = gcalc(tCho-t1,(tn2 - db.get(`${mentionedUser.id}.tAmt`)),sCho-s1,(sn2 - db.get(`${mentionedUser.id}.sAmt`)),db.get(`${msg.author.id}.glory`),db.get(`${mentionedUser.id}.glory`),b)
+        /* [gloryA, gloryD] = gcalc(tCho-t1,(tn2 - db.get(`${mentionedUser.id}.tAmt`)),sCho-s1,(sn2 - db.get(`${mentionedUser.id}.sAmt`)),db.get(`${msg.author.id}.glory`),db.get(`${mentionedUser.id}.glory`),b)
            const attEmbed = new Discord.RichEmbed()
                                 .setColor(Math.floor(Math.random() * 16777214) + 1)
                                 .setAuthor(`${msg.author.username}'s Battle Report`,msg.author.avatarURL)
@@ -332,12 +334,14 @@ export default class fight implements IBotCommand {
                             .addField('Attacking saimonG',`${Math.round(sCho * (0.5 + Math.random()))}`,true)
                             .setTimestamp(new Date())
                             .setFooter('Scout Report',Bot.user.avatarURL);
+        
         function sendWarning(){
             mentionedUser.send(warnEmbed);
         }
         time = 30000;
          setTimeout(sendWarning,time-10000);
          setTimeout(fight,time,tCho,sCho,tn2,sn2);   
-            
+        */
         }
     }
+}

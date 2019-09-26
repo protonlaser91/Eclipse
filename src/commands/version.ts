@@ -28,7 +28,7 @@ export default class version implements IBotCommand {
                                 .setDescription('Current version and build.')
                                 .setColor([200,50,20])
                                 .setThumbnail(Bot.user.avatarURL)
-                                .addField('Version',0.3,true)
+                                .addField('Version',0.2,true)
                                 .addField('Build','alpha',true)
                                 .addBlankField()
                                 .addField('Current update','Added clan functionality and features.')

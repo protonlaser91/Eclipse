@@ -63,7 +63,7 @@ Bot.on("message", msg => {
 
 async function handleCommand(msg: Discord.Message){
     let command = msg.content.split(" ")[0].replace(Config.config.prefix,"").toLowerCase(); //Config.config.prefix is "!"
-    let args = msg.content.split(" ").slice(1); //ignore command (slice(0) and focus on arguments)
+    let args = msg.content.split(" ").slice(1);
     //Make command and args lowercase
     if (command == "inventory" || command == "troops"){
         command = "inv";
