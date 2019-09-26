@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = {
-    "token": "MzMzNjg5MTY2NTQ0MTA5NTc5.XXVzoQ.-gM9fXKqfdhZwc8eaRsMdpzhefk",
+    "token": "INSERT TOKEN HERE",
     "prefix": "!",
     "commands": [
         "ascend",
