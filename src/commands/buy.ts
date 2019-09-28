@@ -38,10 +38,14 @@ export default class buy implements IBotCommand {
             amount = 1;
         }
 
+        //change to switch later
         if (args[1].toLowerCase().includes('thanos')) 
             newItemName = 'Thanosid';
         else if (args[1].toLowerCase().includes('sai'))
             newItemName = 'saimonGay';
+        else if (args[1].toLowerCase().includes('anu')){
+            newItemName = 'anumonGamer';
+        }
         //newItemName = args[1];
         console.log(args);
         let item: itemModel = null as any;
@@ -65,12 +69,17 @@ export default class buy implements IBotCommand {
         }
 
         db.add(`${msg.author.id}.money`,-amount * item.price);
-        if (db.get(`${msg.author.id}.items`)[0] === item.name){
-            db.add(`${msg.author.id}.tAmt`,amount);
-        } else {
-            db.add(`${msg.author.id}.sAmt`,amount);
-        }
+        switch (item.name){
+            case "Thanosid":
+                db.add(`${msg.author.id}.tAmt`,amount);
+            case "saimonGay":
+                db.add(`${msg.author.id}.sAmt`,amount);
+            case "anumonGamer":
+                db.add(`${msg.author.id}.aAmt`,amount);
+            case "Future FaZe Varun":
+                db.add(`${msg.author.id}.vAmt`,amount)
         msg.channel.send(`You have successfully bought ${amount} ${item.name}!`);
     }   
 
+}
 }

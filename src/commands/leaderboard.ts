@@ -23,7 +23,7 @@ export default class leaderboard implements IBotCommand {
     }
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
-        function compareSecondColumn(a: (string | number)[], b: (string | number)[]) {
+        function cTC(a: (string | number)[], b: (string | number)[]) {
             if (a[2] === b[2]) {
                 return 0;
             }
@@ -47,7 +47,13 @@ export default class leaderboard implements IBotCommand {
                 if (allUsers[i].id == msg.author.id){var iNum = i}
                 pC.push([allUsers[i].id,allUsers[i].username,db.get(`${allUsers[i].id}.glory`)])
             }
-            pC.sort(compareSecondColumn);
+            pC.sort(cTC);
+            var tNum: number = 0;
+            for (let p = 0; p < pC.length; p++){
+                if (pC[p][0] == msg.author.id)
+                {tNum = p} //debugging
+            }
+            //var tNum = pC.indexOf([msg.author.id,msg.author.username,db.get(`${msg.author.id}.glory`)]); <--- should work, not sure why it does not
             console.log(pC);
             if (pC.length < 10){
                 for (let x = (10 - pC.length); x < 10; x++){
@@ -56,7 +62,7 @@ export default class leaderboard implements IBotCommand {
             
             }
 
-            msg.channel.send(`pos num ${iNum}`);
+            msg.channel.send(`Position Number: ${iNum} or ${tNum}`);
             const leaderboardEmbed = new Discord.RichEmbed()
                                         .setAuthor('Leaderboard!',Bot.user.avatarURL)
                                         .setThumbnail(Bot.user.avatarURL)
@@ -71,7 +77,7 @@ export default class leaderboard implements IBotCommand {
                                         .addField(`#8: ${pC[7][1]}`,`${pC[7][2]} glory points!`,false)
                                         .addField(`#9: ${pC[8][1]}`,`${pC[8][2]} glory points!`,false)
                                         .addField(`#10: ${pC[9][1]}`,`${pC[9][2]} glory points!`,false)
-                                        .addField(`**#${iNum}:** ${pC[iNum-1][1]}`,`**${pC[iNum-1][2]}** glory points!`,false)
+                                        .addField(`**#${tNum+1}:** ${pC[tNum][1]}`,`**${pC[tNum][2]}** glory points!`,false)
                                         .setFooter('Leaderboards',msg.author.avatarURL)
                                         .setColor(Math.floor(Math.random() * 16777214) + 1);
             msg.channel.send(leaderboardEmbed);

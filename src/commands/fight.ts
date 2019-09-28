@@ -69,6 +69,8 @@ export default class fight implements IBotCommand {
         }
         var attackDeployT = 0;
         var attackDeployS = 0;
+        var attackDeployA = 0;
+        var attackDeployV = 0;
         if (args[2].toLowerCase().includes('thanos')){
             attackDeployT += parseInt(args[1])
 
@@ -79,7 +81,9 @@ export default class fight implements IBotCommand {
             msg.reply(`I could not find troop ${args[2]}`);
             return;
         }
-        
+        function addTroop(troopName: String){
+
+        }
         if (args[4] !== undefined){
             if (args[4].toLowerCase().includes('thanos')){
                 attackDeployT += parseInt(args[3])
@@ -141,10 +145,14 @@ export default class fight implements IBotCommand {
        /*  var bal1 = db.get(`${msg.author.id}.money`)
         var bal2 = db.get(`${mentionedUser.id}.money`)
         */
-        var defenderT = db.get(`${mentionedUser.id}.tAmt`)
-        var defenderS = db.get(`${mentionedUser.id}.sAmt`)
+        var defenderT = db.get(`${mentionedUser.id}.tAmt`);
+        var defenderS = db.get(`${mentionedUser.id}.sAmt`);
+        var attackerMoney = db.get(`${msg.author.id}.money`);
+        var defenderMoney = db.get(`${mentionedUser.id}.money`);
+        var attackerGlory = db.get(`${msg.author.id}.glory`);
+        var defenderGlory = db.get(`${mentionedUser.id}.glory`);
         msg.channel.send(`Attacker's Items[0]: ${attackDeployT} Thanosid and ${attackDeployS} saimonGays\nDefender's Items: ${defenderT} Thanosid and ${defenderS} saimonGays`);
-         //remodel BELOW
+         //remodel BELOW, saimonGay FP = 2, FFV FP = 30, anu = 1
         function elevate(aTroopn: number,dTroopn: number,l: string){
            let aGlory = db.get(`${msg.author.id}.glory`)
            let dGlory = db.get(`${mentionedUser.id}.glory`)

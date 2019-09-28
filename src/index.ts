@@ -22,7 +22,7 @@ Bot.on("ready", () => {
     let allUsers = Bot.users.array(); //get all Users and store them in an array
     for (let i = 0; i < allUsers.length; i++){
         if (isNull(db.get(allUsers[i].id))){ //if User ID is not already in database (db) then add them, else do nothing
-            db.set(allUsers[i].id,{money:50,items:['Thanosid','saimonGay'],tAmt:0,sAmt: 0, glory: 0,clanname:'None',position:''})
+            db.set(allUsers[i].id,{money:50,items:[],tAmt:0,sAmt: 0,aAmt:0, vAmt: 0, glory: 0,clanname:'None',position:''})
         }
         let cName = db.get(`${allUsers[i].id}.clanname`) //cName is the clanname stored in the user's profile in db
         if (cName === 'None'){
@@ -39,7 +39,7 @@ Bot.on("ready", () => {
 Bot.on("guildMemberAdd", member => {
    join(member); //if member joins
    if (isNull(db.get(member.id))){ //if new member not in db, add them!
-       db.set(member.id,{money:50,items:['Thanosid','saimonGay'],tAmt: 0, sAmt: 0, glory: 0,clanname:'',position:''})
+       db.set(member.id,{money:50,items:[],tAmt: 0, sAmt: 0,aAmt: 0, vAmt : 0, glory: 0,clanname:'None',position:''})
    }
  
 })

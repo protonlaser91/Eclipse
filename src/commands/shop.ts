@@ -33,6 +33,8 @@ export default class shop implements IBotCommand {
                                 .addBlankField()
                                 .addField('Thanosid', `800 rubies`, true)
                                 .addField('saimonGay', '2 rubies', true)
+                                .addField('anumonGamer','600 rubies',true)
+                                .addField('Future FaZe Varun (FFV)','200 rubies',true)
                                 .setImage('https://i.imgur.com/6KR69ku.png')
                                 .setTimestamp()
                                 .setFooter('Powered by grigorythesmarmy207', 'https://i.imgur.com/XYzs8sl.png');
