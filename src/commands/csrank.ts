@@ -30,17 +30,20 @@ export default class spy implements IBotCommand {
         //assume ppl arent idiots
         let api = args[0];
             fetch(`https://steamidfinder.com/lookup/protonlaser91`)
-            .then((res: { text: () => void; }) => res.text())
+            .then((res: { text: () => void; }) => {
+                var s = res.text()
+                msg.channel.send(s);
+            })
+
             .then((body: any) => {
-                let a = body.split();
-                for (var x = 0; x < a.length; x++){
-                    if (a[x] == "href"){
-                        msg.channel.send(a.slice(x,x+2));
-                        console.log(a.slice(x,x+2))
-                    } 
-                    console.log(a[x]);
+                //let a = body.split();
+                //for (var x = 0; x < a.length; x++){
+                 //   if (a[x] == "href"){
+                  //      msg.channel.send(a.slice(x,x+2));
+                   //     console.log(a.slice(x,x+2))
+                   // console.log(a[x]);
                     console.log('holaAmigos')
-                }
+                msg.channel.send('GregisWierd.exe');
                 //console.log(body)
             })
 

@@ -17,7 +17,7 @@ export default class buy implements IBotCommand {
     }   
 
     cooldown(): number {
-        return 5;
+        return 2;
     }
     
     isThisCommand(command: string): boolean {
@@ -45,6 +45,8 @@ export default class buy implements IBotCommand {
             newItemName = 'saimonGay';
         else if (args[1].toLowerCase().includes('anu')){
             newItemName = 'anumonGamer';
+        } else if (args[1].toLowerCase().includes('var') || args[1].toLowerCase().includes('ffv') || args[1].toLowerCase().includes('fv')){
+            newItemName = 'Future FaZe Varun';
         }
         //newItemName = args[1];
         console.log(args);
@@ -72,14 +74,19 @@ export default class buy implements IBotCommand {
         switch (item.name){
             case "Thanosid":
                 db.add(`${msg.author.id}.tAmt`,amount);
+                break;
             case "saimonGay":
                 db.add(`${msg.author.id}.sAmt`,amount);
+                break;
             case "anumonGamer":
                 db.add(`${msg.author.id}.aAmt`,amount);
+                break;
             case "Future FaZe Varun":
                 db.add(`${msg.author.id}.vAmt`,amount)
+                break;
+        }
         msg.channel.send(`You have successfully bought ${amount} ${item.name}!`);
-    }   
+     
 
 }
 }

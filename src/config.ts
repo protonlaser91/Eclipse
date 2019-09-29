@@ -1,5 +1,5 @@
 export let config = {
-    "token": "INSERT OWN TOKEN HERE!",
+    "token": "MzMzNjg5MTY2NTQ0MTA5NTc5.XY92aw.3V3GmFLpH2pF-988Wg2LFuCTG9s",
     "prefix": "!",
     "commands": [
         "ascend",
@@ -17,6 +17,8 @@ export let config = {
         "spy",
         "leaderboard",
         "clan",
-        "version"
+        "version",
+        "csrank",
+        "source"
     ]
 }

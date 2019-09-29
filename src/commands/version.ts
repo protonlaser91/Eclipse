@@ -24,15 +24,15 @@ export default class version implements IBotCommand {
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
         const versionEmbed = new Discord.RichEmbed()
-                                .setAuthor('Bendy Man aka The Creator',msg.author.avatarURL,`https://www.google.com/search?q=rick+roll&oq=rick+roll&aqs=chrome..69i57.1981j0j7&sourceid=chrome&ie=UTF-8`)
-                                .setDescription('Current version and build.')
+                                .setAuthor('Bendy Man aka The Creator',Bot.user.avatarURL,`https://github.com/protonlaser91/Eclipse`)
+                                .setDescription('Current version and build. Can be found at `https://github.com/protonlaser91/Eclipse`')
                                 .setColor([200,50,20])
                                 .setThumbnail(Bot.user.avatarURL)
-                                .addField('Version',0.2,true)
+                                .addField('Version',0.3,true)
                                 .addField('Build','alpha',true)
                                 .addBlankField()
-                                .addField('Current update','Added clan functionality and features.')
-                                .addField('Future update plans','Add ShishirBendyBot')
+                                .addField('Current update','Added clan functionality and new troops')
+                                .addField('Future update plans','Add more troops and fix fight')
                                 .setFooter('Bendy Corporation',msg.author.avatarURL)
                                 .setTimestamp(new Date());
         msg.channel.send(versionEmbed);
