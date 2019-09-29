@@ -1,4 +1,5 @@
-# Eclipse [![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.org/dwyl/esta) <?xml version="1.0"?>
+# Eclipse [![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.org/dwyl/esta) 
+<?xml version="1.0"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="156" height="20">
 <linearGradient id="a" x2="0" y2="100%">
     <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
