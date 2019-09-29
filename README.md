@@ -1,4 +1,4 @@
-# Eclipse
+# Eclipse [![Build Status](https://travis-ci.org/JoshuaWise/integer)
 
 A battle bot that relies on a database. Clans have been added! 
 
