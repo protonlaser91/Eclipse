@@ -13,7 +13,7 @@ The fight.ts script will be changed heavily, reducing the need for homogenous tr
 
 ### First time setup
 - Run a build method to using the tsconfig.json file as a model. In Visual Studio Code, it is *Ctrl + Shift + B*.
-- In the terminal, change the working directory to "../dist" (Usually cd dist) and then initialize the Node.js connection with *node .*
+- In the terminal, change the working directory to "../dist" (Usually *cd dist*) and then initialize the Node.js connection with *node .*
 - The program should be up and running and you should see "This bot is online!" in the terminal window.
 
 ### Any other news will be put here
