@@ -8,8 +8,8 @@ Clans have been mostly polished up. A few bugs still exist, but overall it seems
 The fight.ts script will be changed heavily, reducing the need for homogenous troop warfare and mixing it up. The update will subsequently be called "Mixing it up". 
 
 ## Needed dependencies
-- [Node.js](https://nodejs.org/dist/v10.16.3/node-v10.16.3-x64.msi) Node is required to run this program, as it uses discord.js which is a Node.js framework.
-- [TypeScript](https://www.typescriptlang.org/) The src folder relies greatly on the added capabilities of TypeScript, and it is a must have to run this bot. (`npm install typescript -g`)
+- [Node.js](https://nodejs.org/dist/v10.16.3/node-v10.16.3-x64.msi) is required to run this program, as it uses discord.js which is a Node.js framework.
+- [TypeScript](https://www.typescriptlang.org/) is used as the primary language for this bot. (`npm install typescript -g`)
 
 ### First time setup
 - Run a build method to using the tsconfig.json file as a model. In Visual Studio Code, it is *Ctrl + Shift + B*.
