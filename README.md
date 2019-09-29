@@ -1,4 +1,4 @@
-# Eclipse [![Build Status](https://travis-ci.org/JoshuaWise/integer)
+# Eclipse [![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.org/dwyl/esta)
 
 A battle bot that relies on a database. Clans have been added! 
 
