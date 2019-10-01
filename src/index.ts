@@ -118,7 +118,7 @@ async function handleCommand(msg: Discord.Message){
             }
             timestamps.set(msg.author.id, now); //user = key, time = val
             setTimeout(() => timestamps.delete(msg.author.id), cooldownAmount); //wait cooldownAmt!
-            await commandClass.runCommand(args,msg,Bot); //allows asynchronous operation and multithreading so multiple things can happen at once!
+            await commandClass.runCommand(args,msg,Bot); //allows asynchronous operation and multithreading so multiple things can happen at once! also executes the cmd!
         }
         catch(exception){
             console.log(exception);
@@ -132,7 +132,7 @@ function loadCommands(commandsPath: string){
     for (const commandName of Config.config.commands as string[]){ //turns commands in config.ts into a string array and iterates over them
         const commandsClass = require(`${commandsPath}/${commandName}`).default; //imports the command file (default=ts) from file directory
 
-        const command = new commandsClass() as IBotCommand; //command now follows same layout as IBotCommand in form commandsClass(). command is also executed
+        const command = new commandsClass() as IBotCommand; //command now follows same layout as IBotCommand in form commandsClass(), created new object
         commands.push(command); //adds commands to command array
     }
 }

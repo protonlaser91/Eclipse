@@ -82,7 +82,9 @@ export default class leaderboard implements IBotCommand {
                                         .setColor(Math.floor(Math.random() * 16777214) + 1);
             msg.channel.send(leaderboardEmbed);
         } else if (args[0].toLowerCase().startsWith('c')){
-            msg.reply("haven't added that feature yet chief!");
+            const commandsClass = require(`${__dirname}\\clan`).default //YES IT WORKS!!!!!!! CALLED THE CLAN CLASS FROM LEADERBOARD! WHOOOOOOOOOOO
+            const command = new commandsClass() as IBotCommand;
+            await command.runCommand(['show'],msg,Bot);
             return;
         }
 

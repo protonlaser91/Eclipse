@@ -1,18 +1,17 @@
 import * as Discord from "discord.js";
 import { IBotCommand } from "../api";
 import * as db from "quick.db";
-const fetch = require('node-fetch');
 
-export default class source implements IBotCommand {
+export default class thanos implements IBotCommand {
 
-    private readonly _command = "source"
+    private readonly _command = "thanos"
 
     name(): string {
-        return "source";
+        return "thanos";
     } 
 
     help(): string {
-        return "source";
+        return "thanos";
     }   
     
     cooldown(): number{
@@ -23,7 +22,8 @@ export default class source implements IBotCommand {
     }
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
-        msg.reply("You can find my source code at `https://github.com/protonlaser91/Eclipse`");
+        msg.delete(0);
+        msg.channel.send({files: ["https://cdn.discordapp.com/attachments/575856402153603074/628699045724160045/2019-05-23.png"]});
         return;
 
     }

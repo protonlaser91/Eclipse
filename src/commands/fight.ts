@@ -39,8 +39,24 @@ export default class fight implements IBotCommand {
             return;
         }
 
+        const attackTotalT = db.get(`${msg.author.id}.tAmt`)
+        const attackTotalS = db.get(`${msg.author.id}.sAmt`) 
+        const attackTotalA = db.get(`${msg.author.id}.aAmt`)
+        const attackTotalV = db.get(`${msg.author.id}.vAmt`)
+
+        var attackDeployT = 0;
+        var attackDeployS = 0;
+        var attackDeployA = 0;
+        var attackDeployV = 0;
+
         if (args[3] !== undefined){
-            if (isNaN(Number(args[3]))){
+            if (args[3].toLowerCase().includes('al')){
+                attackDeployT = attackTotalT;
+                attackDeployS = attackTotalS;
+                attackDeployA = attackTotalA;
+                attackDeployV = attackTotalV;
+            }
+            else if (isNaN(Number(args[3]))){
                 msg.reply("Proper usage: `!attack <user> <amt1> <troop1> <amt2> <troop2> <time>`. Note that `<amt2>`,`<troop2>` and `<time in hours>` are optional. If time is not entered in, it shall be defaulted as 5 hours #TIME NOT ADDED YET");
                 return;
             }
@@ -67,10 +83,7 @@ export default class fight implements IBotCommand {
             }
         
         }
-        var attackDeployT = 0;
-        var attackDeployS = 0;
-        var attackDeployA = 0;
-        var attackDeployV = 0;
+        
         if (args[2].toLowerCase().includes('thanos')){
             attackDeployT += parseInt(args[1])
 
@@ -122,10 +135,6 @@ export default class fight implements IBotCommand {
             return;
         }
         
-        const attackTotalT = db.get(`${msg.author.id}.tAmt`)
-        const attackTotalS = db.get(`${msg.author.id}.sAmt`) 
-        const attackTotalA = db.get(`${msg.author.id}.aAmt`)
-        const attackTotalV = db.get(`${msg.author.id}.vAmt`)
         //make function to do both 0 > checks! 
         let john: boolean = false;
         function zCheck(attackerDeploy: number,attackerTotal: number, troopName: string){

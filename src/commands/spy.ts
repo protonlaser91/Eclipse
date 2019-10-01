@@ -24,8 +24,8 @@ export default class spy implements IBotCommand {
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
         msg.delete(0);
         let mentionedUser = msg.mentions.users.first();
-        if (!mentionedUser){
-            msg.reply('You need to specify a user to spy on!');
+        if (!mentionedUser){ //if no user is mentioned
+            msg.reply('You need to specify a user to spy on!'); 
             return;
         }
 
@@ -39,16 +39,16 @@ export default class spy implements IBotCommand {
         } else {
            var time = parseFloat(args[1])
         }
-        function sigmoid(n1: number, n2: number){
+        function sigmoid(n1: number, n2: number){ //normalize output as a number between 0 and 1, so Math.random() works w/ it
             if (n1/n2 <= 1){
                 return 1/(1 + 1.1**(n2/n1))
             } else {
                 return 1/(1 + 1.1**(-1*n1/n2))
             }
         }
-        var spierG = db.get(`${msg.author.id}.glory`);
-        var spyedG = db.get(`${mentionedUser.id}.glory`);
-        if (spierG <= 250 && spyedG <= 250){
+        var spierG = db.get(`${msg.author.id}.glory`); //get author id
+        var spyedG = db.get(`${mentionedUser.id}.glory`); //get mentioned user id
+        if (spierG <= 75 && spyedG <= 75){ //if glory of both participants below 75, set chance to 0.5 (yeah i realize 74 and 76 is really messed up BUT TOOOO BAD)
             var chance = 0.5;
         } else if (spierG/spyedG > 10){
             var chance = 0.8;
@@ -60,7 +60,7 @@ export default class spy implements IBotCommand {
         if (Math.random() < chance){ //change to make glory 
             //succ ess
             const t = db.get(`${mentionedUser.id}.tAmt`);
-            const s = db.get(`${mentionedUser.id}.sAmt`);
+            const s = db.get(`${mentionedUser.id}.sAmt`); //get all amouunts of enemy troop
             const v = db.get(`${mentionedUser.id}.vAmt`);
             const a = db.get(`${mentionedUser.id}.aAmt`);
             const m = db.get(`${mentionedUser.id}.money`);
