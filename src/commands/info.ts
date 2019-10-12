@@ -52,7 +52,7 @@ export default class info implements IBotCommand {
                 var nam = "anumonGamer"
                 var a = db.get(`${msg.author.id}.aAmt`)
                 var img = `https://huntforerror.files.wordpress.com/2017/06/pandi.png`
-                var desc = "This troop is a pain in the neck and cuts all firepower on opposite side by **20**%! The Thanosid no longer snaps away **half** of all troops, now it can only snap away **2 for every 5** of a troop! However, an Anumon will only loot for itself, so be wary! \n\nThis troop is not stackable, but in order to work to fruition, you attack with more Anumons than the enemy has defending, or else the enemy gains the **20**% advantage! Glory also has an effect on this, so be careful when choosing your opponent!"
+                var desc = "This troop is a pain in the neck and cuts all firepower on opposite side by **20**%! The Thanosid no longer snaps away **half** of all troops, now it can only snap away **2 for every 5** of a troop! (Or **3 for every 5** if you have the anumonic Advantage!) However, an Anumon will only loot for itself, so be wary! \n\nThis troop is not stackable, but in order to work to fruition, you attack with more Anumons than the enemy has defending, or else the enemy gains the **20**% advantage! Glory also has an effect on this, so be careful when choosing your opponent!"
                 var price = 600
                 var speed = 2
                 var loot = 0

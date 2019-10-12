@@ -25,6 +25,14 @@ export default class fight implements IBotCommand {
     }
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
+        function roundIf(n: number, round: number = 0.3){
+            return n - Math.floor(n) <= round ? Math.floor(n) : Math.ceil(n)
+        }
+
+        function logb(b: number, n: number){ //change of base formula
+            return Math.log(n)/Math.log(b)
+        }
+
         msg.channel.send('FIGHT FUNCTION BEING REMODELED!'); //remodel
         msg.delete(0).catch(console.error);
         let mentionedUser = msg.mentions.users.first();
@@ -34,8 +42,8 @@ export default class fight implements IBotCommand {
         }
         
         //!attack @ShishirB 1000 Thanosid //time in milliseconds for 5 hour attack (default) -208.333 x^3 + 2885.71 x^2 - 13356. x + 20710
-        if (args.length < 3 || !mentionedUser || isNaN(Number(args[1]))){
-            msg.reply("Proper usage: `!attack <user> <amt1> <troop1> <amt2> <troop2> <time>`. Note that `<amt2>`,`<troop2>` and `<time in hours>` are optional. If time is not entered in, it will be defaulted as 5 hours #TIME NOT ADDED YET");
+        if (args.length < 2 || !mentionedUser){
+            msg.reply("Proper Usage: `!attack <user> <amt1> <troop1> <amt2> <troop2> <time>`. Note that `<amt2>`,`<troop2>` and `<time in hours>` are optional. If time is not entered in, it will be defaulted as 5 hours #TIME NOT ADDED YET");
             return;
         }
 
@@ -48,15 +56,21 @@ export default class fight implements IBotCommand {
         var attackDeployS = 0;
         var attackDeployA = 0;
         var attackDeployV = 0;
+        var allvar = false;
+        if (args[1].toLowerCase().includes('al')){
+            allvar = true;
+            attackDeployT = attackTotalT;
+            attackDeployS = attackTotalS;
+            attackDeployA = attackTotalA;
+            attackDeployV = attackTotalV;
+            msg.channel.send('You are sending ALL of your troops!')
+        } else if (isNaN(Number(args[1]))){
+            msg.channel.send("Please insert a number/all for the amount of troops you wish to send!");
+            return;
+        }
 
         if (args[3] !== undefined){
-            if (args[3].toLowerCase().includes('al')){
-                attackDeployT = attackTotalT;
-                attackDeployS = attackTotalS;
-                attackDeployA = attackTotalA;
-                attackDeployV = attackTotalV;
-            }
-            else if (isNaN(Number(args[3]))){
+            if (isNaN(Number(args[3]))){
                 msg.reply("Proper usage: `!attack <user> <amt1> <troop1> <amt2> <troop2> <time>`. Note that `<amt2>`,`<troop2>` and `<time in hours>` are optional. If time is not entered in, it shall be defaulted as 5 hours #TIME NOT ADDED YET");
                 return;
             }
@@ -83,7 +97,7 @@ export default class fight implements IBotCommand {
             }
         
         }
-        
+        if (!allvar){
         if (args[2].toLowerCase().includes('thanos')){
             attackDeployT += parseInt(args[1])
 
@@ -102,7 +116,7 @@ export default class fight implements IBotCommand {
             return;
         }
         //!attack @ShishirB 2 thanos 300 sai 4 anu 20 var
-        for (var e = 4; e < 8; e+=2){
+        for (var e = 4; e < 10; e+=2){
             if (args[e] !== undefined){
                 if (args[e].toLowerCase().includes('thanos')){
                     attackDeployT += parseInt(args[e-1]);
@@ -118,6 +132,7 @@ export default class fight implements IBotCommand {
                 }
             }
         }
+    }
         msg.channel.send(`T: ${attackDeployT}, S: ${attackDeployS}, A: ${attackDeployA}, V: ${attackDeployV}`);
         /* if (args[4] !== undefined){
             if (args[4].toLowerCase().includes('thanos')){
@@ -184,6 +199,8 @@ export default class fight implements IBotCommand {
 
         db.add(`${msg.author.id}.tAmt`,-attackDeployT); //subtract attackDeployers
         db.add(`${msg.author.id}.sAmt`,-attackDeployS);
+        db.add(`${msg.author.id}.aAmt`,-attackDeployA);
+        db.add(`${msg.author.id}.vAmt`,-attackDeployV);
 
        /*  var bal1 = db.get(`${msg.author.id}.money`)
         var bal2 = db.get(`${mentionedUser.id}.money`)
@@ -213,8 +230,8 @@ export default class fight implements IBotCommand {
             .setFooter(`Ailunian IV`)
             .setTimestamp(new Date())
         msg.channel.send(tooMuchWork);
-        return;
          //remodel BELOW, saimonGay FP = 2, FFV FP = 30, anu = 1
+
         function elevate(aTroopn: number,dTroopn: number,l: string){
            let aGlory = db.get(`${msg.author.id}.glory`)
            let dGlory = db.get(`${mentionedUser.id}.glory`)
@@ -223,12 +240,12 @@ export default class fight implements IBotCommand {
            if (aTroopn > dTroopn){
                //attacker wins this minibattle
                aTroopn -= dTroopn;
-               aTroopn = Math.ceil(aTroopn * (1 + dGlory/1000))
+               aTroopn = roundIf(aTroopn * (1 + dGlory/1000))
                db.add(`${mentionedUser.id}.${l}Amt`,-db.get(`${mentionedUser.id}.${l}Amt`));
            } else if (aTroopn < dTroopn){
                //defender wins!
                dTroopn -= aTroopn
-               dTroopn = Math.ceil(dTroopn*(1 + (aGlory/1000)))
+               dTroopn = roundIf(dTroopn*(1 + (aGlory/1000)))
                db.add(`${mentionedUser.id}.${l}Amt`,-db.get(`${mentionedUser.id}.${l}Amt`)+dTroopn);
                aTroopn = 0;
            } else {
@@ -239,11 +256,13 @@ export default class fight implements IBotCommand {
            return aTroopn;
         }   
         //separate thanosid and saimonGay make weighted glory balance! DONE
-        function gcalc(tloss1: number,tloss2: number, sloss1: number,sloss2: number, g1: number,g2: number, attW: boolean){
+
+
+        function gcalc(tloss1: number,tloss2: number, sloss1: number,sloss2: number, aloss1: number, aloss2: number, floss1: number, floss2: number, g1: number,g2: number, attW: boolean){
             let totalPoints = Math.ceil((g1 + g2)/10);
             totalPoints *= g1 > g2 ? Math.ceil((g1+g2)/(1+g1)) : Math.ceil((g1+g2)/(1+g2));
-            let tfactor1 = 1 + (tloss1 + 0.2*sloss1)/1000;
-            let tfactor2 = 1 + (tloss2 + 0.2*sloss2)/1000;
+            let tfactor1 = 1 + (0.95*aloss1 + 0.3*floss1 + 0.8*tloss1 + 0.15*sloss1)/1000;
+            let tfactor2 = 1 + (0.95*aloss2 + 0.3*floss2 + 0.8*tloss2 + 0.15*sloss2)/1000;
 
             var h1 = g1 > g2 ? g1/(1+g1+g2) * totalPoints: g2/(1+g1+g2) * totalPoints; //48
             var l1 = g1 > g2 ? g2/(1+g1+g2) * totalPoints: g1/(1+g1+g2) * totalPoints; //59
@@ -274,144 +293,106 @@ export default class fight implements IBotCommand {
                 db.add(`${mentionedUser.id}.glory`,Math.ceil(l1*tfactor2));
             }
         }
-        return [(db.get(`${msg.author.id}.glory`) - g1),(db.get(`${mentionedUser.id}.glory`) - g2)]
+        return [(db.get(`${msg.author.id}.glory`) - g1),(db.get(`${mentionedUser.id}.glory`) - g2)] //returns change in glory
         }
         console.log("seriously??");
 
         function fight(t1: number,s1: number,t2: number,s2: number){
-           let battleStat = "";
-           let tn = Math.abs(t1-t2);
-           let sn = Math.abs(s1-s2);
-           //t1 = elevate(tCho,tn2,'t');
-          // s1 = elevate(sCho,sn2,'s');
-//jjj       
-           let tU2 = db.get(`${mentionedUser.id}.tAmt`);
-           let sU2 = db.get(`${mentionedUser.id}.sAmt`);
-           msg.channel.send(`Attacker's Items [1]: ${t1} Thanosid and ${s1} saimonGays\nDefender's Items: ${tU2} Thanosid and ${sU2} saimonGays`);
-            var a: number = 0;
-            var b: boolean = true;
-            var gloryA = 0;
-            var gloryD = 0;
-           if (s1/(2**tU2) >= 1){
-               console.log('A');
-               s1 = Math.ceil(s1/(2**tU2));
-               db.add(`${mentionedUser.id}.tAmt`,-tU2);
-               //attacker won!
-               b = true;
-               a = s1 * 3 + t1 * 75;
-               db.add(`${mentionedUser.id}.money`,-a);
-               db.add(`${msg.author.id}.money`,a);
-           }
-           else if (s1/(2**tU2) < 1 && s1/(2**tU2) > 0){
-                    console.log('B');
-                   var exp1 = Math.ceil(Math.log2(s1));
-                if (exp1 === -Infinity){
-                    exp1 = 0;
+            attackDeployA = elevate(attackDeployA,defenderA,'a');
+            defenderA = db.get(`${mentionedUser.id}.aAmt`);
+            //anumonicFight complete
+            var attackTDeath: number[] = [];
+            var defendTDeath: number[] = [];
+            var anumonD;
+            defenderA > 0 ? anumonD = true : anumonD = false; //if defender has more than 0 anumons, 20% boost to D!, else -20% boost!
+            if (anumonD){
+                if (defenderV > 0.3){
+                    defenderV *= (3/5) ** attackDeployT
+                    attackTDeath.concat(Math.ceil(logb(3/5,0.3/defenderV)))
                 }
-               db.add(`${mentionedUser.id}.tAmt`,-exp1);
-               s1 = 0;
-               //defender won!
-               b = false;
-               a = 0
-           }
+                
+                if (defenderA > 0.3){
+                    defenderA *= (3/5) ** attackDeployT
+                    attackTDeath.concat(Math.ceil(logb(3/5,0.3/defenderA)))
+                }
 
-           //swap s1 = 50
-           if (sU2/(2**t1) >= 1){
-               console.log('C')
-               db.add(`${mentionedUser.id}.sAmt`,Math.ceil(sU2/(2**t1))-sU2);
-               t1 = 0;
-            //defender won! HHHELLLPPPPPP!!!
-            b = false;
-            a = 0;
-           } 
-           else if (sU2/(2**t1) < 1 && sU2/(2**t1) > 0){
-               console.log('D');
-               var exp2 = Math.ceil(Math.log2(sU2));
-               if (exp2 === -Infinity){
-                   exp2 = 0;
-               }
-               t1 -= exp2;
-               db.add(`${mentionedUser.id}.sAmt`,-sU2);
-               //attacker won!
-               b = true;
-               a = sU2 * 3 + tU2 * 75;
-               db.add(`${mentionedUser.id}.money`,a);
-               db.add(`${msg.author.id}.money`,-a);
-           }
+                if (defenderS > 0.3){
+                    defenderS *= (3/5) ** attackDeployT
+                    attackTDeath.concat(Math.ceil(logb(3/5,0.3/defenderS)))
+                }
+                
+            } else {
+                if (defenderV > 0.3){
+                    defenderV *= (2/5) ** attackDeployT
+                    attackTDeath.concat(Math.ceil(logb(2/5,0.3/defenderV)))
+                }
+                
+                if (defenderA > 0.3){
+                    defenderA *= (2/5) ** attackDeployT
+                    attackTDeath.concat(Math.ceil(logb(2/5,0.3/defenderA)))
+                }
 
-           if (db.get(`${msg.author.id}.money`) < 0){
-                db.add(`${msg.author.id}.money`,-db.get(`${msg.author.id}.money`))
-           } else if (db.get(`${mentionedUser.id}.money`) < 0){
-                db.add(`${mentionedUser.id}.money`,-db.get(`${mentionedUser.id}.money`))
-           }
-        
-           if (b){
-               var resultA = 'Victory! Your forces were able to overpower the defending army!';
-               var resultD = 'Defeat! The attacking army was too powerful...';
-           } else {
-               var resultA = 'Defeat! The defense was too stubborn...';
-               var resultD = 'Victory! Your forces held off the attacking army successfully!';
-           }
-        /* [gloryA, gloryD] = gcalc(tCho-t1,(tn2 - db.get(`${mentionedUser.id}.tAmt`)),sCho-s1,(sn2 - db.get(`${mentionedUser.id}.sAmt`)),db.get(`${msg.author.id}.glory`),db.get(`${mentionedUser.id}.glory`),b)
-           const attEmbed = new Discord.RichEmbed()
-                                .setColor(Math.floor(Math.random() * 16777214) + 1)
-                                .setAuthor(`${msg.author.username}'s Battle Report`,msg.author.avatarURL)
-                                .setThumbnail(mentionedUser.avatarURL)
-                                .setDescription(`This battle report will state the casualties, loot, and glory received from this battle. Battle Result: ||${resultA}||`)
-                                .addField('Your Troops:',`${tCho} Thanosid and ${sCho} saimonGays`,true)
-                                .addField('Defending Troops:',`${tn2} Thanosid and ${sn2} saimonGays`,true)
-                                .addField('Thanosid Casualties',`-${tCho - t1}`,true)
-                                .addField('saimonGay Casualties',`-${sCho - s1}`,true)
-                                .addField('Loot',`${a} rubies!`,true)
-                                .addField('Glory',`${gloryA} points!`,true)
-                                .setTimestamp(new Date())
-                                .setFooter('Battle Report Statistics',`https://i.imgur.com/XYzs8sl.png`)
-                                .setAuthor('BattleBot',Bot.user.avatarURL);
-            
-           const defEmbed = new Discord.RichEmbed()
-                                .setColor(Math.floor(Math.random() * 16777214) + 1)
-                                .setAuthor(`${mentionedUser.username}'s Battle Report`,mentionedUser.avatarURL)
-                                .setThumbnail(msg.author.avatarURL)
-                                .setDescription(`You've been attacked! This battle report will state the casualties, loot, and glory received from this battle. Battle Result: ||${resultD}||`)
-                                .addField('Your Troops:',`${tn2} Thanosid and ${sn2} saimonGays`,true)
-                                .addField('Attacking Troops:',`${tCho} Thanosid and ${sCho} saimonGays`,true)
-                                .addField('Thanosid Casualties',`-${tn2 - db.get(`${mentionedUser.id}.tAmt`)}`,true)
-                                .addField('saimonGay Casualties',`-${sn2 - db.get(`${mentionedUser.id}.sAmt`)}`,true)
-                                .addField('Loot',`-${a} rubies!`,true)
-                                .addField('Glory',`${gloryD} points!`,true)
-                                .setTimestamp(new Date())
-                                .setFooter('Battle Report Statistics',`https://i.imgur.com/XYzs8sl.png`)
-                                .setAuthor('BattleBot',Bot.user.avatarURL);
-           msg.channel.send(`Attacker's Items[2]: ${t1} Thanosid and ${s1} saimonGays\nDefender's Items: ${db.get(`${mentionedUser.id}.tAmt`)} Thanosid and ${db.get(`${mentionedUser.id}.sAmt`)} saimonGays`);
-           msg.author.send(attEmbed);
-           mentionedUser.send(defEmbed);
-           if (db.get(`${msg.author.id}.glory`) < 0){
-            db.add(`${msg.author.id}.glory`,-db.get(`${msg.author.id}.glory`));
-           }
-            else if (db.get(`${mentionedUser.id}.glory`) < 0) {
-                db.add(`${mentionedUser.id}.glory`,-db.get(`${mentionedUser.id}.glory`));
+                if (defenderS > 0.3){
+                    defenderS *= (2/5) ** attackDeployT
+                    attackTDeath.concat(Math.ceil(logb(2/5,0.3/defenderS)))
+                }
+            } //attacker Thanosid has successfully completed its mission!
+
+            if (attackDeployV > 0.3){
+                attackDeployV *= (3/5) ** defenderT
+                defendTDeath.concat(Math.ceil(logb(3/5,0.3/attackDeployV)))
             }
-           
-           db.add(`${msg.author.id}.tAmt`,t1);
-           db.add(`${msg.author.id}.sAmt`,s1);
-        }
-         const warnEmbed = new Discord.RichEmbed()
-                            .setAuthor(`${mentionedUser.username}'s Scout Report`,mentionedUser.avatarURL)
-                            .setColor(Math.floor(Math.random() * 16777214)+1)
-                            .setThumbnail(msg.author.avatarURL)
-                            .setDescription('You are being attacked! The attacking army is projected to be here in 5 minutes! Your scouts have prepared a report for you of the incoming army.')
-                            .addField('Attacking Thanosid',`${Math.round(tCho * (0.5 + Math.random()))}`,true)
-                            .addField('Attacking saimonG',`${Math.round(sCho * (0.5 + Math.random()))}`,true)
-                            .setTimestamp(new Date())
-                            .setFooter('Scout Report',Bot.user.avatarURL);
-        
-        function sendWarning(){
-            mentionedUser.send(warnEmbed);
-        }
-        time = 30000;
-         setTimeout(sendWarning,time-10000);
-         setTimeout(fight,time,tCho,sCho,tn2,sn2);   
-        */
+            
+            if (attackDeployA > 0.3){
+                attackDeployA *= (3/5) ** defenderT
+                defendTDeath.concat(Math.ceil(logb(3/5,0.3/attackDeployA)))
+            }
+
+            if (attackDeployS > 0.3){
+                attackDeployS *= (3/5) ** defenderT
+                defendTDeath.concat(Math.ceil(logb(3/5,0.3/attackDeployS)))
+            }
+
+            var maxThanosA = Math.max(...attackTDeath); //ATTACKER
+            if (maxThanosA > attackDeployT){
+                //means that attacker does not have enough TS to defeat defending nonThanos troops COMPLETELY! 
+                attackDeployT = 0;
+                //well, that's that ain't it?
+            } else {
+                //ohhh so you DO have at least enough to desTROY the enemy!!
+                attackDeployT -= maxThanosA
+            }
+
+            var maxThanosD = Math.max(...defendTDeath); //DEFENDER
+            if (maxThanosD > defenderT){
+                //means that attacker does not have enough TS to defeat defending nonThanos troops COMPLETELY!
+                db.add(`${mentionedUser.id}.tAmt`,-defenderT);
+                //well, that's that ain't it?
+            } else {
+                //ohhh so you DO have at least enough to desTROY the enemy!!
+                db.add(`${mentionedUser.id}.tAmt`,-maxThanosD);
+            }
+
+            roundIf(defenderV)
+            roundIf(defenderA)
+            roundIf(defenderS)
+            roundIf(attackDeployV)
+            roundIf(attackDeployA)
+            roundIf(attackDeployS)
+
+            elevate(attackDeployT,defenderT,'t')
+            elevate(attackDeployS,defenderS,'s')
+            elevate(attackDeployV,defenderV,'v')
+            //If thanos > 0, then ALL OTHER TROOPS ARE DEAD! THE VICTOR IS CLEARLY THE ATTACKER (or defender)!
+            //It can be assumed that THANOSID is 0, and the only remaining troops at this stage are the Gamers, VarunD's, and saimoN's
+            
+            //if (attackDeployT > 0 || otherCondition){
+                //attackerVictory
+           // }
+
+           // else if (db.get(`${mentionedUser.id}.tAmt`) > 0 || otherCondition){
+                //defender Win!
+          //  }
         }
     }
 }
