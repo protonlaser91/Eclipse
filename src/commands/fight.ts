@@ -25,7 +25,7 @@ export default class fight implements IBotCommand {
     }
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
-        msg.channel.send('Hey Eric, I know you see this. What exactly are you doing?'); //remodel
+        msg.channel.send('FIGHT FUNCTION BEING REMODELED!'); //remodel
         msg.delete(0);
         let mentionedUser = msg.mentions.users.first();
         if (mentionedUser === msg.author){
