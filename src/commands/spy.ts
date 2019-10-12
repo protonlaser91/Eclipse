@@ -24,8 +24,8 @@ export default class spy implements IBotCommand {
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
         msg.delete(0);
         let mentionedUser = msg.mentions.users.first();
-        if (!mentionedUser){
-            msg.reply('You need to specify a user to spy on!');
+        if (!mentionedUser){ //if no user is mentioned
+            msg.reply('You need to specify a user to spy on!'); 
             return;
         }
 
@@ -39,27 +39,50 @@ export default class spy implements IBotCommand {
         } else {
            var time = parseFloat(args[1])
         }
-
-        if (Math.random() < 0.5){
+        function sigmoid(n1: number, n2: number){ //normalize output as a number between 0 and 1, so Math.random() works w/ it
+            if (n1/n2 <= 1){
+                return 1/(1 + 1.1**(n2/n1))
+            } else {
+                return 1/(1 + 1.1**(-1*n1/n2))
+            }
+        }
+        var spierG = db.get(`${msg.author.id}.glory`); //get author id
+        var spyedG = db.get(`${mentionedUser.id}.glory`); //get mentioned user id
+        if (spierG <= 75 && spyedG <= 75){ //if glory of both participants below 75, set chance to 0.5 (yeah i realize 74 and 76 is really messed up BUT TOOOO BAD)
+            var chance = 0.5;
+        } else if (spierG/spyedG > 10){
+            var chance = 0.8;
+        } else if (spyedG/spierG > 10){
+            var chance = 0.33;
+        } else {
+            var chance = sigmoid(spierG,spyedG);
+        }
+        if (Math.random() < chance){ //change to make glory 
             //succ ess
             const t = db.get(`${mentionedUser.id}.tAmt`);
-            const s = db.get(`${mentionedUser.id}.sAmt`);
+            const s = db.get(`${mentionedUser.id}.sAmt`); //get all amouunts of enemy troop
+            const v = db.get(`${mentionedUser.id}.vAmt`);
+            const a = db.get(`${mentionedUser.id}.aAmt`);
             const m = db.get(`${mentionedUser.id}.money`);
             const g = db.get(`${mentionedUser.id}.glory`);
-            const a = new Discord.RichEmbed()
+            const sendEmbed = new Discord.RichEmbed()
                         .setColor([12,12,12])
                         .setDescription(`The espionage was a success! Information about the enemy's troops, money and glory are present in this report`)
                         .setThumbnail(mentionedUser.avatarURL)
                         .setAuthor(`${msg.author.username}'s Spy Report`,msg.author.avatarURL)
                         .addField('Enemy Thanosid',t,true)
                         .addField('Enemy saimonGay',s,true)
+                        .addField('Enemy anumonGamers',a,true)
+                        .addField('Enemy FaZe Varun',v,true)
                         .addField('Enemy money',`${m} rubies`,true)
                         .addField('Enemy Glory',`${g} glory`,true)
                         .setFooter(`Espionage Report On ${mentionedUser.username}`)
                         .setTimestamp(new Date())
-            msg.author.send(a);
+            msg.author.send(sendEmbed);
+            msg.author.send(`Your chance of a successful espionage was ${Math.round(100*chance)}%`);
         } else {
             msg.author.send(`<@${msg.author.id}>, your spy never made it back... The enemy now knows that you have attempted an espionage! Stay alert!`);
+            msg.author.send(`Your chance of a successful espionage was ${Math.round(100*chance)}%`);
             mentionedUser.send(`Alert, <@${mentionedUser.id}>, ||${msg.author.username}|| has attempted to spy on you!`);
         }
 

@@ -2,7 +2,7 @@
 A battle bot that relies on a database. Clans have been added! 
 
 ## Version 0.3 alpha build
-Clans have been mostly polished up. A few bugs still exist, but overall it seems to be working fine.
+Clans have been mostly polished up. A few bugs still exist, but overall it seems to be working fine. Spy function has also seen a few major changes.
 
 ## New fight changes outlined
 The fight.ts script will be changed heavily, reducing the need for homogenous troop warfare and mixing it up. The update will subsequently be called "Mixing it up". 

@@ -26,7 +26,7 @@ export default class fight implements IBotCommand {
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
         msg.channel.send('FIGHT FUNCTION BEING REMODELED!'); //remodel
-        msg.delete(0);
+        msg.delete(0).catch(console.error);
         let mentionedUser = msg.mentions.users.first();
         if (mentionedUser === msg.author){
             msg.reply(`You can't attack yourself!`);
@@ -39,16 +39,32 @@ export default class fight implements IBotCommand {
             return;
         }
 
+        const attackTotalT = db.get(`${msg.author.id}.tAmt`)
+        const attackTotalS = db.get(`${msg.author.id}.sAmt`) 
+        const attackTotalA = db.get(`${msg.author.id}.aAmt`)
+        const attackTotalV = db.get(`${msg.author.id}.vAmt`)
+
+        var attackDeployT = 0;
+        var attackDeployS = 0;
+        var attackDeployA = 0;
+        var attackDeployV = 0;
+
         if (args[3] !== undefined){
-            if (isNaN(Number(args[3]))){
+            if (args[3].toLowerCase().includes('al')){
+                attackDeployT = attackTotalT;
+                attackDeployS = attackTotalS;
+                attackDeployA = attackTotalA;
+                attackDeployV = attackTotalV;
+            }
+            else if (isNaN(Number(args[3]))){
                 msg.reply("Proper usage: `!attack <user> <amt1> <troop1> <amt2> <troop2> <time>`. Note that `<amt2>`,`<troop2>` and `<time in hours>` are optional. If time is not entered in, it shall be defaulted as 5 hours #TIME NOT ADDED YET");
                 return;
             }
 
         }
-        else {
-            args.push(`0`);
-        }
+        //else {
+          //  args.push(`0`);
+        //}
 
         let time: number;
         if (args[5] !== undefined){
@@ -67,24 +83,43 @@ export default class fight implements IBotCommand {
             }
         
         }
-        var attackDeployT = 0;
-        var attackDeployS = 0;
-        var attackDeployA = 0;
-        var attackDeployV = 0;
+        
         if (args[2].toLowerCase().includes('thanos')){
             attackDeployT += parseInt(args[1])
 
         } else if (args[2].toLowerCase().includes('sai')){
             attackDeployS += parseInt(args[1])
 
-        } else {
+        } else if (args[2].toLowerCase().includes('anu')){
+            attackDeployA += parseInt(args[1])
+        } 
+        else if (args[2].toLowerCase().includes('var')){
+            attackDeployV += parseInt(args[1])
+
+        }
+        else {
             msg.reply(`I could not find troop ${args[2]}`);
             return;
         }
-        function addTroop(troopName: String){
-
+        //!attack @ShishirB 2 thanos 300 sai 4 anu 20 var
+        for (var e = 4; e < 8; e+=2){
+            if (args[e] !== undefined){
+                if (args[e].toLowerCase().includes('thanos')){
+                    attackDeployT += parseInt(args[e-1]);
+                } else if (args[e].toLowerCase().includes('sai')){
+                    attackDeployS += parseInt(args[e-1]);
+                } else if (args[e].toLowerCase().includes('anu')){
+                    attackDeployA += parseInt(args[e-1]);
+                } else if (args[e].toLowerCase().includes('var')){
+                    attackDeployV += parseInt(args[e-1]);
+                } else {
+                    msg.reply(`I could not find troop ${args[e]}`);
+                    return;
+                }
+            }
         }
-        if (args[4] !== undefined){
+        msg.channel.send(`T: ${attackDeployT}, S: ${attackDeployS}, A: ${attackDeployA}, V: ${attackDeployV}`);
+        /* if (args[4] !== undefined){
             if (args[4].toLowerCase().includes('thanos')){
                 attackDeployT += parseInt(args[3])
             } else if (args[4].toLowerCase().includes('sai')){
@@ -93,21 +128,29 @@ export default class fight implements IBotCommand {
                 msg.reply(`I could not find troop ${args[4]}`);
                 return;
             }
-        } 
+        } */
 
         if (attackDeployT < 0 || attackDeployS < 0 ){
             msg.reply('Nice try!')
             return;
         }
         
-        const attackTotalT = db.get(`${msg.author.id}.tAmt`)
-        const attackTotalS = db.get(`${msg.author.id}.sAmt`) 
+        //make function to do both 0 > checks! 
+        let john: boolean = false;
+        function zCheck(attackerDeploy: number,attackerTotal: number, troopName: string){
+            if (attackerDeploy > attackerTotal){
+                msg.reply(`You don't have enough ${troopName} to launch this attack!`);
+                john = true;
+            }
+        }
 
-        if (attackDeployT > attackTotalT){
-            msg.reply("You don't have enough Thanosid to launch this attack!");
-            return;
-        } else if (attackDeployS > attackTotalS){
-            msg.reply("You don't have enough saimonGays to launch this attack!");
+        zCheck(attackDeployT,attackTotalT,'Thanosid\'s');
+        zCheck(attackDeployS,attackTotalS,'saimonGay\'s');
+        zCheck(attackDeployA,attackTotalA,'anumonGamer\'s');
+        zCheck(attackDeployV,attackTotalV,'FaZe Varun\'s'); //SO IT SHOWS ALL OF THE TROOPS YOU CANNOT DEPLOY!
+        
+
+        if (john){
             return;
         }
 
@@ -147,11 +190,30 @@ export default class fight implements IBotCommand {
         */
         var defenderT = db.get(`${mentionedUser.id}.tAmt`);
         var defenderS = db.get(`${mentionedUser.id}.sAmt`);
+        var defenderA = db.get(`${mentionedUser.id}.aAmt`);
+        var defenderV = db.get(`${mentionedUser.id}.vAmt`);
         var attackerMoney = db.get(`${msg.author.id}.money`);
         var defenderMoney = db.get(`${mentionedUser.id}.money`);
         var attackerGlory = db.get(`${msg.author.id}.glory`);
         var defenderGlory = db.get(`${mentionedUser.id}.glory`);
-        msg.channel.send(`Attacker's Items[0]: ${attackDeployT} Thanosid and ${attackDeployS} saimonGays\nDefender's Items: ${defenderT} Thanosid and ${defenderS} saimonGays`);
+        let tooMuchWork = new Discord.RichEmbed()
+            .setColor([12,12,12])
+            .setDescription(`Yer Troops Sonny-boy`)
+            .setThumbnail(mentionedUser.avatarURL)
+            .setAuthor(`${msg.author.username}'s Spy Report`,msg.author.avatarURL)
+            .addField('Yer Thanosid',attackDeployT,true)
+            .addField('Yer saimonGay',attackDeployS,true)
+            .addField('Yer anumonGamers',attackDeployA,true)
+            .addField('Yer FaZe Varun',attackDeployV,true)
+            .addBlankField()
+            .addField('Yer enemy Thanosid',defenderT,true)
+            .addField('Yer enemy saimonGay',defenderS,true)
+            .addField('Yer enemy anumonGamers',defenderA,true)
+            .addField('Yer enemy FaZe Varun',defenderV,true)
+            .setFooter(`Ailunian IV`)
+            .setTimestamp(new Date())
+        msg.channel.send(tooMuchWork);
+        return;
          //remodel BELOW, saimonGay FP = 2, FFV FP = 30, anu = 1
         function elevate(aTroopn: number,dTroopn: number,l: string){
            let aGlory = db.get(`${msg.author.id}.glory`)
