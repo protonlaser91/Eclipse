@@ -33,7 +33,6 @@ export default class fight implements IBotCommand {
             return Math.log(n)/Math.log(b)
         }
 
-        msg.channel.send('FIGHT FUNCTION BEING REMODELED!'); //remodel
         msg.delete(0).catch(console.error);
         let mentionedUser = msg.mentions.users.first();
         if (mentionedUser === msg.author){
@@ -241,19 +240,22 @@ export default class fight implements IBotCommand {
                //attacker wins this minibattle
                aTroopn -= dTroopn;
                aTroopn = roundIf(aTroopn * (1 + dGlory/1000))
-               db.add(`${mentionedUser.id}.${l}Amt`,-db.get(`${mentionedUser.id}.${l}Amt`));
+               //db.add(`${mentionedUser.id}.${l}Amt`,-db.get(`${mentionedUser.id}.${l}Amt`));
+               dTroopn = 0;
            } else if (aTroopn < dTroopn){
                //defender wins!
                dTroopn -= aTroopn
                dTroopn = roundIf(dTroopn*(1 + (aGlory/1000)))
-               db.add(`${mentionedUser.id}.${l}Amt`,-db.get(`${mentionedUser.id}.${l}Amt`)+dTroopn);
+               //db.add(`${mentionedUser.id}.${l}Amt`,-db.get(`${mentionedUser.id}.${l}Amt`)+dTroopn);
                aTroopn = 0;
            } else {
                //tie
-               db.add(`${mentionedUser.id}.${l}Amt`,-db.get(`${mentionedUser.id}.${l}Amt`));
+               //db.add(`${mentionedUser.id}.${l}Amt`,-db.get(`${mentionedUser.id}.${l}Amt`));
+               dTroopn = 0;
                aTroopn = 0;
            }
-           return aTroopn;
+           //console.log([aTroopn,dTroopn]);
+           return [aTroopn,dTroopn];
         }   
         //separate thanosid and saimonGay make weighted glory balance! DONE
 
@@ -295,64 +297,79 @@ export default class fight implements IBotCommand {
         }
         return [(db.get(`${msg.author.id}.glory`) - g1),(db.get(`${mentionedUser.id}.glory`) - g2)] //returns change in glory
         }
-        console.log("seriously??");
 
-        function fight(t1: number,s1: number,t2: number,s2: number){
-            attackDeployA = elevate(attackDeployA,defenderA,'a');
-            defenderA = db.get(`${mentionedUser.id}.aAmt`);
+        function fight(lstA: number[], lstD: number[]){ //vast!
+            var [attackDeployV,attackDeployA,attackDeployS, attackDeployT] = lstA
+            var [defenderV,defenderA,defenderS, defenderT] = lstD
+            //msg.channel.send(`Attacker: ${attackDeployA}, Def: ${defenderA}`)
+            var [attackDeployA,defenderA] = elevate(attackDeployA,defenderA,'a');
+            console.log(defenderA);
+            console.log(attackDeployA);
+            //defenderA = db.get(`${mentionedUser.id}.aAmt`);
             //anumonicFight complete
-            var attackTDeath: number[] = [];
-            var defendTDeath: number[] = [];
+            var attackTDeath: number[] = [0];
+            var defendTDeath: number[] = [0];
             var anumonD;
             defenderA > 0 ? anumonD = true : anumonD = false; //if defender has more than 0 anumons, 20% boost to D!, else -20% boost!
             if (anumonD){
                 if (defenderV > 0.3){
                     defenderV *= (3/5) ** attackDeployT
-                    attackTDeath.concat(Math.ceil(logb(3/5,0.3/defenderV)))
+                    msg.channel.send('A');
+                    attackTDeath.push(Math.ceil(logb(3/5,0.3/defenderV)))
                 }
                 
                 if (defenderA > 0.3){
                     defenderA *= (3/5) ** attackDeployT
-                    attackTDeath.concat(Math.ceil(logb(3/5,0.3/defenderA)))
+                    msg.channel.send('B');
+                    attackTDeath.push(Math.ceil(logb(3/5,0.3/defenderA)))
                 }
 
                 if (defenderS > 0.3){
                     defenderS *= (3/5) ** attackDeployT
-                    attackTDeath.concat(Math.ceil(logb(3/5,0.3/defenderS)))
+                    msg.channel.send('C');
+                    attackTDeath.push(Math.ceil(logb(3/5,0.3/defenderS)))
                 }
                 
             } else {
                 if (defenderV > 0.3){
                     defenderV *= (2/5) ** attackDeployT
-                    attackTDeath.concat(Math.ceil(logb(2/5,0.3/defenderV)))
+                    msg.channel.send('D');
+                    attackTDeath.push(Math.ceil(logb(2/5,0.3/defenderV)))
                 }
                 
                 if (defenderA > 0.3){
                     defenderA *= (2/5) ** attackDeployT
-                    attackTDeath.concat(Math.ceil(logb(2/5,0.3/defenderA)))
+                    msg.channel.send('E');
+                    attackTDeath.push(Math.ceil(logb(2/5,0.3/defenderA)))
                 }
 
                 if (defenderS > 0.3){
                     defenderS *= (2/5) ** attackDeployT
-                    attackTDeath.concat(Math.ceil(logb(2/5,0.3/defenderS)))
+                    msg.channel.send('F');
+                    attackTDeath.push(Math.ceil(logb(2/5,0.3/defenderS)))
                 }
             } //attacker Thanosid has successfully completed its mission!
 
             if (attackDeployV > 0.3){
-                attackDeployV *= (3/5) ** defenderT
-                defendTDeath.concat(Math.ceil(logb(3/5,0.3/attackDeployV)))
+                attackDeployV *= (1/2) ** defenderT
+                msg.channel.send('G');
+                defendTDeath.push(Math.ceil(logb(1/2,0.3/attackDeployV)))
             }
             
             if (attackDeployA > 0.3){
-                attackDeployA *= (3/5) ** defenderT
-                defendTDeath.concat(Math.ceil(logb(3/5,0.3/attackDeployA)))
+                attackDeployA *= (1/2) ** defenderT
+                msg.channel.send('H');
+                defendTDeath.push(Math.ceil(logb(1/2,0.3/attackDeployA)))
             }
 
             if (attackDeployS > 0.3){
-                attackDeployS *= (3/5) ** defenderT
-                defendTDeath.concat(Math.ceil(logb(3/5,0.3/attackDeployS)))
+                attackDeployS *= (1/2) ** defenderT
+                msg.channel.send('I');
+                defendTDeath.push(Math.ceil(logb(1/2,0.3/attackDeployS)))
             }
 
+            console.log(attackTDeath);
+            console.log(defendTDeath);
             var maxThanosA = Math.max(...attackTDeath); //ATTACKER
             if (maxThanosA > attackDeployT){
                 //means that attacker does not have enough TS to defeat defending nonThanos troops COMPLETELY! 
@@ -366,23 +383,29 @@ export default class fight implements IBotCommand {
             var maxThanosD = Math.max(...defendTDeath); //DEFENDER
             if (maxThanosD > defenderT){
                 //means that attacker does not have enough TS to defeat defending nonThanos troops COMPLETELY!
-                db.add(`${mentionedUser.id}.tAmt`,-defenderT);
+                defenderT = 0;
                 //well, that's that ain't it?
             } else {
                 //ohhh so you DO have at least enough to desTROY the enemy!!
-                db.add(`${mentionedUser.id}.tAmt`,-maxThanosD);
+                defenderT -= maxThanosD
             }
 
-            roundIf(defenderV)
-            roundIf(defenderA)
-            roundIf(defenderS)
-            roundIf(attackDeployV)
-            roundIf(attackDeployA)
-            roundIf(attackDeployS)
+            var [attackDeployT,defenderT] = elevate(attackDeployT,defenderT,'t')
+            var [attackDeployS,defenderS] = elevate(attackDeployS,defenderS,'s')
+            var [attackDeployV, defenderV] = elevate(attackDeployV,defenderV,'v')
 
-            elevate(attackDeployT,defenderT,'t')
-            elevate(attackDeployS,defenderS,'s')
-            elevate(attackDeployV,defenderV,'v')
+            defenderV = roundIf(defenderV)
+            defenderA = roundIf(defenderA)
+            defenderS = roundIf(defenderS)
+            defenderT = roundIf(defenderT)
+            attackDeployV = roundIf(attackDeployV)
+            attackDeployA = roundIf(attackDeployA)
+            attackDeployS = roundIf(attackDeployS)
+            attackDeployT =roundIf(attackDeployT)
+
+            msg.channel.send(`defendFFV: ${defenderV}, S: ${defenderS}, T: ${defenderT}, A: ${defenderA}`)
+            msg.channel.send(`attackFFV: ${attackDeployV}, S: ${attackDeployS}, T: ${attackDeployT}, A: ${attackDeployA}`)
+
             //If thanos > 0, then ALL OTHER TROOPS ARE DEAD! THE VICTOR IS CLEARLY THE ATTACKER (or defender)!
             //It can be assumed that THANOSID is 0, and the only remaining troops at this stage are the Gamers, VarunD's, and saimoN's
             
@@ -394,5 +417,6 @@ export default class fight implements IBotCommand {
                 //defender Win!
           //  }
         }
+        fight([attackDeployV,attackDeployA,attackDeployS,attackDeployT],[defenderV,defenderA,defenderS,defenderT]);
     }
 }

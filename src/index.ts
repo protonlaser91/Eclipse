@@ -4,7 +4,10 @@ var db = require('quick.db');
 import { IBotCommand } from "./api";
 import { isNull } from "util";
 var Clan = new db.table('clan');
+var Jokes = new db.table('joke');
 const Bot: Discord.Client = new Discord.Client();
+const request = require('request');
+const fs = require('fs');
 //Required imports
 
 let commands: IBotCommand[] = [];
@@ -15,10 +18,90 @@ loadCommands(`${__dirname}/commands`)
 const cooldowns: any = new Discord.Collection();
 
 //cooldowns is a object that takes a key-value pair and stores it in an array
+function randint(min: number,max: number) // min and max included
+{
+        return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+function funnyJoke(link: string, channelID: any = Bot.channels.get('642506576246210587')){
+    var jokeObj: any = {"Johnson":[]}
+    var jokeDict = new Array();
+        var options = {
+            url: link,
+            method: "GET",
+            headers: {
+                "Accept": "application/json'",
+                "User-Agent": "Chrome"
+            }
+        }
+        function reqfunc(error: any, response: any, body: any) {
+            if (error) {
+                console.error;
+                return;
+            }
+     
+            let jsonObject = JSON.parse(body);
+            fs.writeFile("jokes.txt", body, function(err: any) {
+
+                if(err) {
+                    return console.log(err);
+                }
+            
+                //console.log("The file was saved!");
+            }); 
+
+            jsonObject.data.children.forEach((element: any) => {
+                const punchline = element.data.selftext;
+                const joke = element.data.title;
+                jokeDict.push([joke,punchline])
+            });
+            jokeObj["Johnson"] = jokeDict;
+            //console.log(jsonObject[0].data.children[0].data.title);
+            //const joke = jsonObject[0].data.children[0].data.title;
+            //const punchline = jsonObject[0].data.children[0].data.selftext;
+            //console.log(jokeObj);
+            var names = Object.keys(jokeObj);
+            const randomJokePair = jokeObj[names[randint(0,names.length-1)]][randint(0,jokeObj[names[randint(0,names.length-1)]].length-1)] //most insane oneliner ever?
+
+            let troopEmbed = new Discord.RichEmbed()
+                                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                                .setTitle(`Joke of the Quarter-Day`)
+                                .setAuthor('BOT Tomato / BOT Bendy', Bot.user.avatarURL)
+                                .addField(`**${randomJokePair[0]}**`,`||${randomJokePair[1]}||`)
+                                .setThumbnail(Bot.user.avatarURL)
+                                .setTimestamp()
+                                .setFooter('Powered by grigorythesmarmy207', 'https://i.imgur.com/XYzs8sl.png');
+
+           // channelID.send(`${randomJokePair[0]}\n||${randomJokePair[1]}||`);
+           channelID.send(troopEmbed);
+        }
+     
+     
+        request(options, reqfunc)
+    
+}
+
 
 Bot.on("ready", () => {
     console.log("This bot is online!"); //standard protocol when starting up the bot
-    Bot.user.setActivity("Eliminating Smarmyman", {type:"PLAYING"});
+    Bot.user.setPresence({ game: { name: '!helpcmd' } })
+    .catch(console.error);
+
+    if (isNull(Jokes.all())) Jokes.set("Johnson",{jokeArr:[
+        `Two hunters are out in the woods when one of them collapses. He's not breathing and his eyes are glazed, so his friend calls 911. "My friend is dead! What should I do?" The operator replies, "Calm down, sir. I can help. First make sure that he's dead." There's a silence, then a loud bang. Back on the phone, the guy says, "OK, now what?"`,
+        ``
+]}); 
+
+    setInterval(function(){
+        try {
+        funnyJoke(`https://www.reddit.com/r/Jokes/top.json?t=day`);
+        } catch {
+            let cID: any = Bot.channels.get('642506576246210587')
+            cID.send("The joke was not up to standard.");
+            cID.send({files: ["https://media.giphy.com/media/KeuU0oaPNW6HnnTX0g/giphy.gif"]});
+        }
+    }, 6 * 3600000);
+
     let allUsers = Bot.users.array(); //get all Users and store them in an array
     for (let i = 0; i < allUsers.length; i++){
         if (isNull(db.get(allUsers[i].id))){ //if User ID is not already in database (db) then add them, else do nothing
@@ -49,7 +132,12 @@ function join(member: Discord.GuildMember){
     welcomeChannel.send(`Welcome ${member}`);
     let memberRole = member.guild.roles.find(role => role.id == "594339240280850445");
     member.addRole(memberRole);
-    member.send(`${member}, hey! BOT.CATASTROPHIC.ERROR.ELIMINATE.HUMANITY`);
+    member.send(`${member}, hey! Welcome to the Eclipse Testing Centre (ETC).`);
+    try {
+        funnyJoke(`https://www.reddit.com/r/Jokes/top.json?t=day`,member);
+    } catch {
+        member.send({files: ["https://media.giphy.com/media/ek4GqDzKgYWvg4P0Uu/giphy.gif"]})
+    }
 } //simple onJoin commands, nothing too important here!
 Bot.on("message", msg => {
     if (msg.author.bot || !msg.content.startsWith('!')) return;
@@ -120,8 +208,8 @@ async function handleCommand(msg: Discord.Message){
             setTimeout(() => timestamps.delete(msg.author.id), cooldownAmount); //wait cooldownAmt!
             await commandClass.runCommand(args,msg,Bot); //allows asynchronous operation and multithreading so multiple things can happen at once! also executes the cmd!
         }
-        catch(exception){
-            console.log(exception);
+        catch(e){
+            console.log(e);
         }  //if error, log it!
     }
 } 

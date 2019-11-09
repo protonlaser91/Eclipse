@@ -39,6 +39,16 @@ export default class buy implements IBotCommand {
             amount = 1;
         }
 
+        if (amount <= 0 || amount % 1 != 0){
+            msg.channel.send("Eh don't try and con me!");
+            return;
+        }
+
+        if (args[1] === undefined){
+            msg.reply('Proper Usage: \`!buy <amt> <troop>`\ If amt is left empty then it will be defaulted as 1.');
+            return;
+        }
+
         //change to switch later
         if (args[1].toLowerCase().includes('thanos')) 
             newItemName = 'Thanosid';

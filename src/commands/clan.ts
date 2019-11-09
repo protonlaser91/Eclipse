@@ -24,6 +24,7 @@ export default class clan implements IBotCommand {
     }
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
+        var noSec = false;
         function cTC(a: (string | number)[], b: (string | number)[]) { //compareThirdColumn
             if (a[2] === b[2]) {
                 return 0;
@@ -189,8 +190,12 @@ export default class clan implements IBotCommand {
             if (db.get(`${msg.author.id}.position`) === 'Commander'){
                 db.set(`${msg.author.id}.position`,'')
                 db.set(`${msg.author.id}.clanname`,'None')
-                db.set(`${secc}.position`,'Commander');
+                if (noSec){
+                    msg.channel.send("Well hello there, Junior! " + String(clanlist));
+            }   else {
+                    db.set(`${secc}.position`,'Commander');
             }
+        }
             //find way to remove specific user from Clan db COMPLETE
             Clan.set(`${db.get(`${msg.author.id}.clanname`)}.memberids`,mid)
             Clan.set(`${db.get(`${msg.author.id}.clanname`)}.memberuns`,mun)

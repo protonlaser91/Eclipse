@@ -10,7 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^12.0.10",
+    "cheerio": "^1.0.0-rc.3",
     "discord.js": "^11.5.1",
-    "quick.db": "^7.0.0-b22"
+    "fs": "0.0.1-security",
+    "node-fetch": "^2.6.0",
+    "quick.db": "^7.0.0-b22",
+    "request": "^2.88.0"
   }
 }

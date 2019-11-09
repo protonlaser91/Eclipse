@@ -23,7 +23,7 @@ export default class thanos implements IBotCommand {
 
     async runCommand(args: string[], msg: Discord.Message, Bot: Discord.Client): Promise<void> {
         msg.delete(0);
-        msg.channel.send({files: ["https://cdn.discordapp.com/attachments/575856402153603074/628699045724160045/2019-05-23.png"]});
+        msg.channel.send({files: ["https://media.giphy.com/media/KeuU0oaPNW6HnnTX0g/giphy.gif"]});
         return;
 
     }
