@@ -52,7 +52,7 @@ export default class joke implements IBotCommand {
                                 .setAuthor('BOT Tomato / BOT Bendy', Bot.user.avatarURL)
                                 .setThumbnail(Bot.user.avatarURL)
                                 .setTimestamp()
-                                .setFooter('Powered by grigorythesmarmy207', 'https://i.imgur.com/XYzs8sl.png')
+                                .setFooter('Powered by grigorythesmarmy207', 'REDACT')
                                 for (var x = 0; x < 3; x++){
                                     console.log(yerJokes[x]);
                                     troopEmbed.addField(yerJokes[x][0],yerJokes[x][1]);
