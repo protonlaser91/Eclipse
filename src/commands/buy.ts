@@ -57,7 +57,7 @@ export default class buy implements IBotCommand {
         else if (args[1].toLowerCase().includes('anu')){
             newItemName = 'anumonGamer';
         } else if (args[1].toLowerCase().includes('var') || args[1].toLowerCase().includes('ffv') || args[1].toLowerCase().includes('fv')){
-            newItemName = 'Future FaZe Varun';
+            newItemName = 'REDACT';
         }
         //newItemName = args[1];
         console.log(args); //log all arguments
@@ -92,7 +92,7 @@ export default class buy implements IBotCommand {
             case "anumonGamer":
                 db.add(`${msg.author.id}.aAmt`,amount);
                 break;
-            case "Future FaZe Varun":
+            case "REDACT":
                 db.add(`${msg.author.id}.vAmt`,amount)
                 break;
         }
