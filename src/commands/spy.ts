@@ -73,7 +73,7 @@ export default class spy implements IBotCommand {
                         .addField('Enemy Thanosid',t,true)
                         .addField('Enemy saimonGay',s,true)
                         .addField('Enemy anumonGamers',a,true)
-                        .addField('Enemy FaZe Varun',v,true)
+                        .addField('Enemy REDACT',v,true)
                         .addField('Enemy money',`${m} rubies`,true)
                         .addField('Enemy Glory',`${g} glory`,true)
                         .setFooter(`Espionage Report On ${mentionedUser.username}`)
