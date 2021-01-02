@@ -33,12 +33,12 @@ export default class inv implements IBotCommand {
                             .addField("Thanosid",`${a}`,true)
                             .addField("saimonGay",`${b}`,true)
                             .addField("anumonGamer",`${c}`,true)
-                            .addField("Future FaZe Varun",`${d}`,true)
+                            .addField("REDACT",`${d}`,true)
                             .setAuthor(`${msg.author.username}'s Inventory!`,msg.author.avatarURL)
                             .setThumbnail(`https://i.imgur.com/6KR69ku.png`)
                             .setImage(`https://i.imgur.com/XYzs8sl.png`)
                             .setTimestamp()
-                            .setFooter('Powered by Anumon Technologies', 'https://i.imgur.com/XYzs8sl.png');
+                            .setFooter('Powered by Anumon Technologies', 'REDACT');
         msg.channel.send(invEmbed)
             .then(msg => {
             (msg as Discord.Message).delete(20000)
